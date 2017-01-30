@@ -5,6 +5,11 @@ var player = {
   yPos: 150
 };
 
+var ball = {
+  xPos: 200,
+  yPos: 200
+}
+
 ///////////////FUNCTIONS
 var Room = {
   generate: function() {
@@ -82,7 +87,6 @@ $(function(){
   function keyDownHandler(e) {
     if(e.keyCode === 39) {
       rightPressed = true;
-      console.log(rightPressed)
     } else if (e.keyCode === 40) {
       downPressed = true;
     } else if(e.keyCode === 37) {
@@ -95,7 +99,6 @@ $(function(){
   function keyUpHandler(e) {
     if(e.keyCode === 39) {
       rightPressed = false;
-      console.log(rightPressed)
     } else if (e.keyCode === 40) {
       downPressed = false;
     } else if(e.keyCode === 37) {
@@ -109,7 +112,7 @@ $(function(){
 
   function drawBall() {
     ctx.beginPath();
-    ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+    ctx.rect(ball.xPos, ball.yPos, userWidth, userHeight);
     ctx.fillStyle = "#0095DD";
     ctx.fill();
     ctx.closePath();
@@ -131,17 +134,56 @@ $(function(){
     ctx.closePath();
   };
 
-  function collisionDetection() {
+  // function collisionDetection(player) {
+  //   for (var i=0;i<wallArray.length;i++) {
+  //     var currentWallX = wallArray[i].xPos;
+  //     var currentWallY = wallArray[i].yPos;
+  //     var currentWallWidth = wallArray[i].width;
+  //     var currentWallHeight = wallArray[i].height;
+  //     if ((player.xPos + userWidth > currentWallX && player.xPos < currentWallX+currentWallWidth) && (player.yPos + userHeight > currentWallY && player.yPos < currentWallY+currentWallHeight) || (player.xPos < 0 || player.xPos + userWidth > 600 || player.yPos < 0 || player.yPos + userHeight > 600)) {
+  //       console.log('inside wall');
+  //       return true;
+  //     }
+  //   }
+  // }
+
+  function xCollisionDetection(player) {
     for (var i=0;i<wallArray.length;i++) {
       var currentWallX = wallArray[i].xPos;
       var currentWallY = wallArray[i].yPos;
       var currentWallWidth = wallArray[i].width;
       var currentWallHeight = wallArray[i].height;
-      if ((player.xPos + userWidth > currentWallX && player.xPos < currentWallX+currentWallWidth) && (player.yPos + userHeight > currentWallY && player.yPos < currentWallY+currentWallHeight)) {
-        console.log('inside wall');
-        return true;
-      }
+      if ((player.xPos < 0 || player.xPos + userWidth > 600) || (player.xPos + userWidth > currentWallX && player.xPos < currentWallX + currentWallWidth)) {
 
+        if (player.yPos + userHeight > currentWallY && player.yPos < currentWallY + currentWallHeight) {
+          console.log("x collision");
+          return true;
+        } else if (player.xPos < 0 || player.xPos + userWidth > 600) {
+          return true;
+        }
+      }
+    }
+  }
+
+  function yCollisionDetection(player) {
+    for (var i=0;i<wallArray.length;i++) {
+      var currentWallX = wallArray[i].xPos;
+      var currentWallY = wallArray[i].yPos;
+      var currentWallWidth = wallArray[i].width;
+      var currentWallHeight = wallArray[i].height;
+      if ((player.yPos < 0 || player.yPos + userHeight > 600) || (player.yPos + userHeight > currentWallY && player.yPos < currentWallY + currentWallHeight)) {
+        if (player.xPos + userWidth > currentWallX && player.xPos < currentWallX + currentWallWidth) {
+          return true;
+        } else if (player.yPos < 0 || player.yPos + userHeight > 600) {
+          return true;
+        }
+      }
+    }
+  }
+
+  function collisionDetection(player) {
+    if (yCollisionDetection(player) || xCollisionDetection(player)) {
+      return true;
     }
   }
 
@@ -153,35 +195,36 @@ $(function(){
     drawPlayer();
     drawBall();
     drawWalls();
-    x += dx;
-    y += dy;
-
-    if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
-        dx = -dx;
+    ball.xPos += dx;
+    if(xCollisionDetection(ball)) {
+      dx = -dx;
     };
-    if(y + dy > canvas.height-ballRadius || y + dy < ballRadius) {
+    ball.yPos += dy;
+
+    if(yCollisionDetection(ball)) {
         dy = -dy;
     };
 
 
     if(rightPressed) {
       player.xPos += 5;
-      if (collisionDetection()) {
+      if (collisionDetection(player)) {
         player.xPos -= 5;
+        //Decrement health
       }
     } else if(leftPressed) {
       player.xPos -= 5;
-      if (collisionDetection()) {
+      if (collisionDetection(player)) {
         player.xPos += 5;
       }
     } else if(upPressed) {
       player.yPos -= 5;
-      if (collisionDetection()) {
+      if (collisionDetection(player)) {
         player.yPos += 5;
       }
     } else if(downPressed) {
       player.yPos += 5;
-      if (collisionDetection()) {
+      if (collisionDetection(player)) {
         player.yPos -= 5;
       }
     }
