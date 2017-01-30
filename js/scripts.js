@@ -33,6 +33,7 @@ var Room = {
     points += 1;
     $('#points').text(points);
     wallArray = [];
+    createBall(1);
     createWalls(3);
     createDoor();
     if (player.xPos + player.width > 595) {
@@ -120,8 +121,7 @@ function xCollisionDetection(player) {
     var currentWallWidth = wallArray[i].width;
     var currentWallHeight = wallArray[i].height;
     if ((player.xPos < 0 || player.xPos + player.width > 600) || (player.xPos + player.width > currentWallX && player.xPos < currentWallX + currentWallWidth)) {
-
-      if (player.yPos + player.height > currentWallY && player.yPos < currentWallY + currentWallHeight) {
+      if (player.yPos + player.height > currentWallY + 5 && player.yPos < currentWallY + currentWallHeight - 5) {
         return true;
       } else if (player.xPos < 0 || player.xPos + player.width > 600) {
         return true;
@@ -137,7 +137,7 @@ function yCollisionDetection(player) {
     var currentWallWidth = wallArray[i].width;
     var currentWallHeight = wallArray[i].height;
     if ((player.yPos < 0 || player.yPos + player.height > 600) || (player.yPos + player.height > currentWallY && player.yPos < currentWallY + currentWallHeight)) {
-      if (player.xPos + player.width > currentWallX && player.xPos < currentWallX + currentWallWidth) {
+      if (player.xPos + player.width > currentWallX + 5 && player.xPos < currentWallX + currentWallWidth - 5) {
         return true;
       } else if (player.yPos < 0 || player.yPos + player.height > 600) {
         return true;
@@ -154,7 +154,6 @@ function collisionDetection(player) {
 
 function doorCollision(player) {
   if ((player.xPos + player.width > Door.xPos && player.xPos < Door.xPos + Door.width) && (player.yPos + player.height > Door.yPos && player.yPos < Door.yPos + Door.height)) {
-    console.log("collision");
     Room.generate();
   }
 }
@@ -296,14 +295,14 @@ $(function(){
       ballArray[i].xPos += ballArray[i].dx;
       ballArray[i].yPos += ballArray[i].dy;
 
-      console.log(ballArray[i])
-
       if(xCollisionDetection(ballArray[i])) {
         ballArray[i].dx = -ballArray[i].dx;
+        console.log('x collision');
       };
 
       if(yCollisionDetection(ballArray[i])){
         ballArray[i].dy = -ballArray[i].dy;
+        console.log('y collision');
       };
     }
   }
@@ -311,7 +310,7 @@ $(function(){
 ///////////////// Call all programs
 // <<<<<<< HEAD
   Room.generate();
-  createBall(10);
+
 
 
 
