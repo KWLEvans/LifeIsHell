@@ -79,8 +79,8 @@ $(function(){
   }
 
 
-  //CONTROLLER
-    function keyDownHandler(e) {
+  //CONTROLLER Function
+  function keyDownHandler(e) {
     if(e.keyCode === 39) {
       rightPressed = true;
       console.log(rightPressed)
@@ -105,10 +105,7 @@ $(function(){
       upPressed = false;
     }
   }
-
-
-///////////player
-
+  //Controller Function Ends
 
 
   function drawBall() {
