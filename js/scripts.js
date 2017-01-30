@@ -1,8 +1,25 @@
 /////////////////GLOBAL VARIABLES
-var wallArray = []
+var wallArray = [];
+
+var Door = {
+  xPos:600,
+  yPos:300,
+  height:50,
+  width:50
+};
+
+var OutDoor = {
+  xPos: -45,
+  yPos: 30,
+  height: 50,
+  width: 50
+}
+
 var player = {
-  xPos: 150,
-  yPos: 150
+  xPos: 10,
+  yPos: 10,
+  width: 30,
+  height: 30
 };
 
 var ball = {
@@ -10,11 +27,30 @@ var ball = {
   yPos: 200
 }
 
+
 ///////////////FUNCTIONS
 var Room = {
   generate: function() {
     wallArray = [];
     createWalls(3);
+    createDoor();
+    if (player.xPos + player.width > 595) {
+      player.xPos = 0;
+      OutDoor.xPos = -45;
+      OutDoor.yPos = player.yPos;
+    } else if (player.xPos < 5) {
+      player.xPos = 570;
+      OutDoor.xPos = 595;
+      OutDoor.yPos = player.yPos;
+    } else if (player.yPos + player.height > 595) {
+      player.yPos = 0;
+      OutDoor.yPos = -45;
+      OutDoor.xPos = player.xPos;
+    } else if (player.yPos < 5) {
+      player.yPos = 570;
+      OutDoor.yPos = 595;
+      OutDoor.xPos = player.xPos;
+    }
   }
 }
 
@@ -37,11 +73,81 @@ function createWalls(numberOfWalls) {
   for (var i = 1; i<=numberOfWalls; i++) {
     var randomWidth = randomNumberGrid(1,10);
     var randomHeight = randomNumberGrid(1,10);
-    var randomXPosition = randomNumberGrid(0,30-(randomWidth/20));
-    var randomYPosition = randomNumberGrid(0,30-(randomHeight/20));
+    var randomXPosition = randomNumberGrid(2,28-(randomWidth/20));
+    var randomYPosition = randomNumberGrid(2,28-(randomHeight/20));
     wallArray.push(new Wall(randomXPosition, randomYPosition,randomWidth,randomHeight));
   };
 };
+
+function createDoor() {
+  var randomXOrY = randomNumber(0,2);
+  var randomMinOrMax = randomNumber(0,2);
+
+  if (randomXOrY) {
+    if (randomMinOrMax) {
+      Door.xPos = -45;
+      Door.yPos = randomNumberGrid(1, 29);
+    } else {
+      Door.xPos = 595;
+      Door.yPos = randomNumberGrid(1, 29);
+    }
+  } else {
+    if (randomMinOrMax) {
+      Door.yPos = -45;
+      Door.xPos = randomNumberGrid(1, 29);
+    } else {
+      Door.yPos = 595;
+      Door.xPos = randomNumberGrid(1, 29);
+    }
+  }
+}
+
+function xCollisionDetection(player) {
+  for (var i=0;i<wallArray.length;i++) {
+    var currentWallX = wallArray[i].xPos;
+    var currentWallY = wallArray[i].yPos;
+    var currentWallWidth = wallArray[i].width;
+    var currentWallHeight = wallArray[i].height;
+    if ((player.xPos < 0 || player.xPos + player.width > 600) || (player.xPos + player.width > currentWallX && player.xPos < currentWallX + currentWallWidth)) {
+
+      if (player.yPos + player.height > currentWallY && player.yPos < currentWallY + currentWallHeight) {
+        return true;
+      } else if (player.xPos < 0 || player.xPos + player.width > 600) {
+        return true;
+      }
+    }
+  }
+}
+
+function yCollisionDetection(player) {
+  for (var i=0;i<wallArray.length;i++) {
+    var currentWallX = wallArray[i].xPos;
+    var currentWallY = wallArray[i].yPos;
+    var currentWallWidth = wallArray[i].width;
+    var currentWallHeight = wallArray[i].height;
+    if ((player.yPos < 0 || player.yPos + player.height > 600) || (player.yPos + player.height > currentWallY && player.yPos < currentWallY + currentWallHeight)) {
+      if (player.xPos + player.width > currentWallX && player.xPos < currentWallX + currentWallWidth) {
+        return true;
+      } else if (player.yPos < 0 || player.yPos + player.height > 600) {
+        return true;
+      }
+    }
+  }
+}
+
+function collisionDetection(player) {
+  if (yCollisionDetection(player) || xCollisionDetection(player)) {
+    return true;
+  }
+}
+
+function doorCollision(player) {
+  if ((player.xPos + player.width > Door.xPos && player.xPos < Door.xPos + Door.width) && (player.yPos + player.height > Door.yPos && player.yPos < Door.yPos + Door.height)) {
+    console.log("collision");
+    Room.generate();
+  }
+}
+
 
 
 ////////////////DOCUMENT READY
@@ -68,18 +174,29 @@ $(function(){
 
 
 
-
-  var userHeight = 30;
-  var userWidth = 30;
-
-
   function drawPlayer(){
     ctx.beginPath();
-    ctx.rect(player.xPos, player.yPos, userHeight, userWidth );
+    ctx.rect(player.xPos, player.yPos, player.height, player.width );
     ctx.fillStyle = "red";
     ctx.fill();
     ctx.closePath();
 
+  }
+
+  function drawDoor() {
+    ctx.beginPath();
+    ctx.rect(Door.xPos, Door.yPos, Door.width, Door.height);
+    ctx.fillStyle = "green";
+    ctx.fill();
+    ctx.closePath();
+  }
+
+  function drawOutDoor() {
+    ctx.beginPath();
+    ctx.rect(OutDoor.xPos, OutDoor.yPos, OutDoor.height, OutDoor.width);
+    ctx.fillStyle = "darkred";
+    ctx.fill();
+    ctx.closePath();
   }
 
 
@@ -112,7 +229,7 @@ $(function(){
 
   function drawBall() {
     ctx.beginPath();
-    ctx.rect(ball.xPos, ball.yPos, userWidth, userHeight);
+    ctx.rect(ball.xPos, ball.yPos, player.width, player.height);
     ctx.fillStyle = "#0095DD";
     ctx.fill();
     ctx.closePath();
@@ -140,61 +257,25 @@ $(function(){
   //     var currentWallY = wallArray[i].yPos;
   //     var currentWallWidth = wallArray[i].width;
   //     var currentWallHeight = wallArray[i].height;
-  //     if ((player.xPos + userWidth > currentWallX && player.xPos < currentWallX+currentWallWidth) && (player.yPos + userHeight > currentWallY && player.yPos < currentWallY+currentWallHeight) || (player.xPos < 0 || player.xPos + userWidth > 600 || player.yPos < 0 || player.yPos + userHeight > 600)) {
+  //     if ((player.xPos + player.width > currentWallX && player.xPos < currentWallX+currentWallWidth) && (player.yPos + player.height > currentWallY && player.yPos < currentWallY+currentWallHeight) || (player.xPos < 0 || player.xPos + player.width > 600 || player.yPos < 0 || player.yPos + player.height > 600)) {
   //       console.log('inside wall');
   //       return true;
   //     }
   //   }
   // }
 
-  function xCollisionDetection(player) {
-    for (var i=0;i<wallArray.length;i++) {
-      var currentWallX = wallArray[i].xPos;
-      var currentWallY = wallArray[i].yPos;
-      var currentWallWidth = wallArray[i].width;
-      var currentWallHeight = wallArray[i].height;
-      if ((player.xPos < 0 || player.xPos + userWidth > 600) || (player.xPos + userWidth > currentWallX && player.xPos < currentWallX + currentWallWidth)) {
-
-        if (player.yPos + userHeight > currentWallY && player.yPos < currentWallY + currentWallHeight) {
-          console.log("x collision");
-          return true;
-        } else if (player.xPos < 0 || player.xPos + userWidth > 600) {
-          return true;
-        }
-      }
-    }
-  }
-
-  function yCollisionDetection(player) {
-    for (var i=0;i<wallArray.length;i++) {
-      var currentWallX = wallArray[i].xPos;
-      var currentWallY = wallArray[i].yPos;
-      var currentWallWidth = wallArray[i].width;
-      var currentWallHeight = wallArray[i].height;
-      if ((player.yPos < 0 || player.yPos + userHeight > 600) || (player.yPos + userHeight > currentWallY && player.yPos < currentWallY + currentWallHeight)) {
-        if (player.xPos + userWidth > currentWallX && player.xPos < currentWallX + currentWallWidth) {
-          return true;
-        } else if (player.yPos < 0 || player.yPos + userHeight > 600) {
-          return true;
-        }
-      }
-    }
-  }
-
-  function collisionDetection(player) {
-    if (yCollisionDetection(player) || xCollisionDetection(player)) {
-      return true;
-    }
-  }
 
 ///////////////// Call all programs
-  createWalls(3);
+  Room.generate();
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawPlayer();
     drawBall();
     drawWalls();
+    drawDoor();
+    drawOutDoor();
+    doorCollision(player);
     ball.xPos += dx;
     if(xCollisionDetection(ball)) {
       dx = -dx;
@@ -229,6 +310,7 @@ $(function(){
       }
     }
   }
+
 
   setInterval(draw, 10);
 
