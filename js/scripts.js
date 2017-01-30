@@ -1,4 +1,39 @@
 $(function(){
+//player controller
+  var leftPressed = false;
+  var upPressed = false;
+  var rightPressed = false;
+  var downPressed = false;
+
+  document.addEventListener("keydown", keyDownHandler, false);
+  document.addEventListener("keyup", keyUpHandler, false);
+
+  function keyDownHandler(e) {
+    if(e.keyCode === 39) {
+      rightPressed = true;
+      console.log(rightPressed)
+    } else if (e.keyCode === 38) {
+      downPressed = true;
+    } else if(e.keyCode === 37) {
+      leftPressed = true;
+    } else if(e.keyCode === 40) {
+      upPressed = true;
+    }
+  }
+
+  function keyUpHandler(e) {
+    if(e.keyCode === 39) {
+      rightPressed = false;
+      console.log(rightPressed)
+    } else if (e.keyCode === 38) {
+      downPressed = false;
+    } else if(e.keyCode === 37) {
+      leftPressed = false;
+    } else if(e.keyCode === 40) {
+      upPressed = false;
+    }
+  }
+
   var canvas = document.getElementById("canvas");
   var ctx = canvas.getContext("2d");
   var x = canvas.width/2;
