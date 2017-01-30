@@ -1,5 +1,9 @@
 /////////////////GLOBAL VARIABLES
 var wallArray = []
+var player = {
+  xPos: 150,
+  yPos: 150
+};
 
 ///////////////FUNCTIONS
 var Room = {
@@ -63,15 +67,10 @@ $(function(){
   var userHeight = 30;
   var userWidth = 30;
 
-  var player = {
-    userX: (canvas.width - userWidth)/2,
-    userY: (canvas.height - userHeight)/2
-  };
-
 
   function drawPlayer(){
     ctx.beginPath();
-    ctx.arc(player.userX, player.userY, ballRadius, 0, Math.PI*2);
+    ctx.rect(player.xPos, player.yPos, userHeight, userWidth );
     ctx.fillStyle = "red";
     ctx.fill();
     ctx.closePath();
@@ -132,6 +131,19 @@ $(function(){
     ctx.closePath();
   };
 
+  function collisionDetection() {
+    for (var i=0;i<wallArray.length;i++) {
+      var currentWallX = wallArray[i].xPos;
+      var currentWallY = wallArray[i].yPos;
+      var currentWallWidth = wallArray[i].width;
+      var currentWallHeight = wallArray[i].height;
+      if ((player.xPos + userWidth > currentWallX && player.xPos < currentWallX+currentWallWidth) && (player.yPos + userHeight > currentWallY && player.yPos < currentWallY+currentWallHeight)) {
+        console.log('inside wall');
+        return true;
+      }
+
+    }
+  }
 
 ///////////////// Call all programs
   createWalls(3);
@@ -151,14 +163,27 @@ $(function(){
         dy = -dy;
     };
 
+
     if(rightPressed) {
-      player.userX += 5;
+      player.xPos += 5;
+      if (collisionDetection()) {
+        player.xPos -= 5;
+      }
     } else if(leftPressed) {
-      player.userX -= 5;
+      player.xPos -= 5;
+      if (collisionDetection()) {
+        player.xPos += 5;
+      }
     } else if(upPressed) {
-      player.userY -= 5;
+      player.yPos -= 5;
+      if (collisionDetection()) {
+        player.yPos += 5;
+      }
     } else if(downPressed) {
-      player.userY += 5;
+      player.yPos += 5;
+      if (collisionDetection()) {
+        player.yPos -= 5;
+      }
     }
   }
 
