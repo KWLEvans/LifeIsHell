@@ -1,5 +1,7 @@
 /////////////////GLOBAL VARIABLES
 var wallArray = [];
+var ballArray = [];
+var points = 0;
 
 var Door = {
   xPos:600,
@@ -15,6 +17,7 @@ var OutDoor = {
   width: 50
 }
 
+
 var player = {
   xPos: 10,
   yPos: 10,
@@ -22,15 +25,13 @@ var player = {
   height: 30
 };
 
-var ball = {
-  xPos: 200,
-  yPos: 200
-}
 
 
 ///////////////FUNCTIONS
 var Room = {
   generate: function() {
+    points += 1;
+    $('#points').text(points);
     wallArray = [];
     createWalls(3);
     createDoor();
@@ -61,6 +62,15 @@ function Wall(xPos,yPos,width,height) {
   this.height = height;
 }
 
+function Ball(xPos,yPos,width,height, dx, dy) {
+  this.xPos = xPos;
+  this.yPos = yPos;
+  this.width = width;
+  this.height = height;
+  this.dx = dx;
+  this.dy = dy;
+}
+
 function randomNumber(min,max) {
   return Math.floor(Math.random()*(max-min)+min);
 };
@@ -78,6 +88,7 @@ function createWalls(numberOfWalls) {
     wallArray.push(new Wall(randomXPosition, randomYPosition,randomWidth,randomHeight));
   };
 };
+
 
 function createDoor() {
   var randomXOrY = randomNumber(0,2);
@@ -150,17 +161,25 @@ function doorCollision(player) {
 
 
 
+function createBall(numberOfBalls) {
+  var dx = 2;
+  var dy = -2
+  for (var i = 1; i<=numberOfBalls; i++) {
+    var randomBallWidth = randomNumberGrid(1,1);
+    var randomBallHeight = randomNumberGrid(1,1);
+    var randomBallX = randomNumberGrid(0, 30-(randomBallWidth/20));
+    var randomBallY = randomNumberGrid(0, 30-(randomBallHeight/20));
+    ballArray.push(new Ball(randomBallX, randomBallY, randomBallWidth, randomBallHeight, dx, dy));
+
+  }
+}
+
+
+
 ////////////////DOCUMENT READY
 $(function(){
   var canvas = document.getElementById("canvas");
   var ctx = canvas.getContext("2d");
-
-  //ball variables
-  var x = canvas.width/2;
-  var y = canvas.height-30;
-  var ballRadius = 10;
-  var dx = 2;
-  var dy = -2;
 
 
 //player controller
@@ -173,14 +192,12 @@ $(function(){
   //player controller ends
 
 
-
   function drawPlayer(){
     ctx.beginPath();
     ctx.rect(player.xPos, player.yPos, player.height, player.width );
     ctx.fillStyle = "red";
     ctx.fill();
     ctx.closePath();
-
   }
 
   function drawDoor() {
@@ -226,14 +243,23 @@ $(function(){
   }
   //Controller Function Ends
 
+  function drawBalls() {
+    for (var i=0; i< ballArray.length; i++) {
+      var currentBall = ballArray[i];
+      drawBall(currentBall.xPos, currentBall.yPos, currentBall.width, currentBall.height);
+    };
+  };
 
-  function drawBall() {
+
+  function drawBall(xPos,yPos,width,height) {
     ctx.beginPath();
-    ctx.rect(ball.xPos, ball.yPos, player.width, player.height);
+    ctx.rect(xPos, yPos, width, height);
     ctx.fillStyle = "#0095DD";
     ctx.fill();
     ctx.closePath();
   };
+
+
 
 
   function drawWalls() {
@@ -265,26 +291,41 @@ $(function(){
   // }
 
 
+  var moveBalls = function(){
+    for(var i=0; i<ballArray.length; i++){
+      ballArray[i].xPos += ballArray[i].dx;
+      ballArray[i].yPos += ballArray[i].dy;
+
+      console.log(ballArray[i])
+
+      if(xCollisionDetection(ballArray[i])) {
+        ballArray[i].dx = -ballArray[i].dx;
+      };
+
+      if(yCollisionDetection(ballArray[i])){
+        ballArray[i].dy = -ballArray[i].dy;
+      };
+    }
+  }
+
 ///////////////// Call all programs
+// <<<<<<< HEAD
   Room.generate();
+  createBall(10);
+
+
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawPlayer();
-    drawBall();
+    drawBalls();
     drawWalls();
     drawDoor();
     drawOutDoor();
     doorCollision(player);
-    ball.xPos += dx;
-    if(xCollisionDetection(ball)) {
-      dx = -dx;
-    };
-    ball.yPos += dy;
 
-    if(yCollisionDetection(ball)) {
-        dy = -dy;
-    };
+
+    moveBalls();
 
 
     if(rightPressed) {
