@@ -2,6 +2,7 @@
 var wallArray = [];
 var ballArray = [];
 var points = 0;
+var health = 10;
 
 var Door = {
   xPos:600,
@@ -56,7 +57,7 @@ var Room = {
   }
 }
 
-function Wall(xPos,yPos,width,height) {
+function Wall(xPos,yPos, width, height) {
   this.xPos = xPos;
   this.yPos = yPos;
   this.width = width;
@@ -84,9 +85,9 @@ function createWalls(numberOfWalls) {
   for (var i = 1; i<=numberOfWalls; i++) {
     var randomWidth = randomNumberGrid(1,10);
     var randomHeight = randomNumberGrid(1,10);
-    var randomXPosition = randomNumberGrid(2,28-(randomWidth/20));
-    var randomYPosition = randomNumberGrid(2,28-(randomHeight/20));
-    wallArray.push(new Wall(randomXPosition, randomYPosition,randomWidth,randomHeight));
+    var randomXPosition = randomNumberGrid(2,28 - (randomWidth/20));
+    var randomYPosition = randomNumberGrid(2,28 - (randomHeight/20));
+    wallArray.push(new Wall(randomXPosition, randomYPosition, randomWidth, randomHeight));
   };
 };
 
@@ -130,6 +131,22 @@ function xCollisionDetection(player) {
   }
 }
 
+function xBallCollisionDetection(player) {
+  for (var i=0;i<ballArray.length;i++) {
+    var currentWallX = ballArray[i].xPos;
+    var currentWallY = ballArray[i].yPos;
+    var currentWallWidth = ballArray[i].width;
+    var currentWallHeight = ballArray[i].height;
+    if ((player.xPos < 0 || player.xPos + player.width > 600) || (player.xPos + player.width > currentWallX && player.xPos < currentWallX + currentWallWidth)) {
+      if (player.yPos + player.height > currentWallY + 5 && player.yPos < currentWallY + currentWallHeight - 5) {
+        return true;
+      } else if (player.xPos < 0 || player.xPos + player.width > 600) {
+        return true;
+      }
+    }
+  }
+}
+
 function yCollisionDetection(player) {
   for (var i=0;i<wallArray.length;i++) {
     var currentWallX = wallArray[i].xPos;
@@ -146,8 +163,30 @@ function yCollisionDetection(player) {
   }
 }
 
+function yBallCollisionDetection(player) {
+  for (var i=0;i<ballArray.length;i++) {
+    var currentWallX = ballArray[i].xPos;
+    var currentWallY = ballArray[i].yPos;
+    var currentWallWidth = ballArray[i].width;
+    var currentWallHeight = ballArray[i].height;
+    if ((player.yPos < 0 || player.yPos + player.height > 600) || (player.yPos + player.height > currentWallY && player.yPos < currentWallY + currentWallHeight)) {
+      if (player.xPos + player.width > currentWallX + 5 && player.xPos < currentWallX + currentWallWidth - 5) {
+        return true;
+      } else if (player.yPos < 0 || player.yPos + player.height > 600) {
+        return true;
+      }
+    }
+  }
+}
+
 function collisionDetection(player) {
   if (yCollisionDetection(player) || xCollisionDetection(player)) {
+    return true;
+  }
+}
+
+function ballCollisionDetection(player) {
+  if (yBallCollisionDetection(player) || xBallCollisionDetection(player)) {
     return true;
   }
 }
@@ -276,20 +315,6 @@ $(function(){
     ctx.closePath();
   };
 
-  // function collisionDetection(player) {
-  //   for (var i=0;i<wallArray.length;i++) {
-  //     var currentWallX = wallArray[i].xPos;
-  //     var currentWallY = wallArray[i].yPos;
-  //     var currentWallWidth = wallArray[i].width;
-  //     var currentWallHeight = wallArray[i].height;
-  //     if ((player.xPos + player.width > currentWallX && player.xPos < currentWallX+currentWallWidth) && (player.yPos + player.height > currentWallY && player.yPos < currentWallY+currentWallHeight) || (player.xPos < 0 || player.xPos + player.width > 600 || player.yPos < 0 || player.yPos + player.height > 600)) {
-  //       console.log('inside wall');
-  //       return true;
-  //     }
-  //   }
-  // }
-
-
   var moveBalls = function(){
     for(var i=0; i<ballArray.length; i++){
       ballArray[i].xPos += ballArray[i].dx;
@@ -308,7 +333,6 @@ $(function(){
   }
 
 ///////////////// Call all programs
-// <<<<<<< HEAD
   Room.generate();
 
 
@@ -322,12 +346,43 @@ $(function(){
     drawDoor();
     drawOutDoor();
     doorCollision(player);
+    if (ballCollisionDetection(player)) {
+      health -= 1;
+      $('#health').text(health);
+    }
 
 
     moveBalls();
 
-
-    if(rightPressed) {
+    if(downPressed && rightPressed) {
+      player.yPos += 5;
+      player.xPos += 5;
+      if (collisionDetection(player)) {
+        player.yPos -= 5;
+        player.xPos -= 5;
+      }
+    } else if(downPressed && leftPressed) {
+        player.yPos += 5;
+        player.xPos -= 5;
+      if (collisionDetection(player)) {
+        player.yPos -= 5;
+        player.xPos += 5;
+      }
+    } else if(upPressed && rightPressed) {
+        player.yPos -= 5;
+        player.xPos += 5;
+      if (collisionDetection(player)) {
+        player.yPos += 5;
+        player.xPos -= 5;
+      }
+    } else if(upPressed && leftPressed) {
+        player.yPos -= 5;
+        player.xPos -= 5;
+      if (collisionDetection(player)) {
+        player.yPos += 5;
+        player.xPos += 5;
+      }
+    } else if(rightPressed) {
       player.xPos += 5;
       if (collisionDetection(player)) {
         player.xPos -= 5;
