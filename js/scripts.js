@@ -1,9 +1,38 @@
 /////////////////GLOBAL VARIABLES
-
-
 var wallArray = []
 
 ///////////////FUNCTIONS
+var Room = {
+  generate: function() {
+    wallArray = [];
+    createWalls(3);
+  }
+}
+
+function Wall(xPos,yPos,width,height) {
+  this.xPos = xPos;
+  this.yPos = yPos;
+  this.width = width;
+  this.height = height;
+}
+
+function randomNumber(min,max) {
+  return Math.floor(Math.random()*(max-min)+min);
+};
+
+function randomNumberGrid(min,max) {
+  return randomNumber(min,max)*20;
+}
+
+function createWalls(numberOfWalls) {
+  for (var i = 1; i<=numberOfWalls; i++) {
+    var randomWidth = randomNumberGrid(1,10);
+    var randomHeight = randomNumberGrid(1,10);
+    var randomXPosition = randomNumberGrid(0,30-(randomWidth/20));
+    var randomYPosition = randomNumberGrid(0,30-(randomHeight/20));
+    wallArray.push(new Wall(randomXPosition, randomYPosition,randomWidth,randomHeight));
+  };
+};
 
 
 ////////////////DOCUMENT READY
@@ -17,20 +46,7 @@ $(function(){
   var ballRadius = 10;
   createWalls(3);
 
-  function Wall(xPos,yPos,width,height) {
-    this.xPos = xPos;
-    this.yPos = yPos;
-    this.width = width;
-    this.height = height;
-  }
 
-  function randomNumber(min,max) {
-    return Math.floor(Math.random()*(max-min)+min);
-  };
-
-  function randomNumberGrid(min,max) {
-    return randomNumber(min,max)*20;
-  }
 
   function drawBall() {
     ctx.beginPath();
@@ -40,15 +56,6 @@ $(function(){
     ctx.closePath();
   };
 
-  function createWalls(numberOfWalls) {
-    for (var i = 1; i<=numberOfWalls; i++) {
-      var randomXPosition = randomNumberGrid(0,30);
-      var randomYPosition = randomNumberGrid(0,30);
-      var randomWidth = randomNumberGrid(1,3);
-      var randomHeight = randomNumberGrid(1,3);
-      wallArray.push(new Wall(randomXPosition, randomYPosition,randomWidth,randomHeight));
-    };
-  };
 
   function drawWalls() {
     for (var i=0; i< wallArray.length; i++) {
@@ -86,6 +93,8 @@ $(function(){
 
   setInterval(draw, 10);
 
-
+  $("#generateButton").click(function() {
+    Room.generate();
+  });
 
 });
