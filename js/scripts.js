@@ -327,8 +327,35 @@ $(function(){
 
     moveBalls();
 
-
-    if(rightPressed) {
+    if(downPressed && rightPressed) {
+      player.yPos += 5;
+      player.xPos += 5;
+      if (collisionDetection(player)) {
+        player.yPos -= 5;
+        player.xPos -= 5;
+      }
+    } else if(downPressed && leftPressed) {
+        player.yPos += 5;
+        player.xPos -= 5;
+      if (collisionDetection(player)) {
+        player.yPos -= 5;
+        player.xPos += 5;
+      }
+    } else if(upPressed && rightPressed) {
+        player.yPos -= 5;
+        player.xPos += 5;
+      if (collisionDetection(player)) {
+        player.yPos += 5;
+        player.xPos -= 5;
+      }
+    } else if(upPressed && leftPressed) {
+        player.yPos -= 5;
+        player.xPos -= 5;
+      if (collisionDetection(player)) {
+        player.yPos += 5;
+        player.xPos += 5;
+      }
+    } else if(rightPressed) {
       player.xPos += 5;
       if (collisionDetection(player)) {
         player.xPos -= 5;
