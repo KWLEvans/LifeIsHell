@@ -85,7 +85,7 @@ Player.prototype.move = function() {
     this.yPos += 5;
     this.xPos += 5;
     this.facing = "rightDown";
-    if (collisionDetection(this)) {
+    if (collisionDetectionLoop(playerArray,wallArray)) {
       this.yPos -= 5;
       this.xPos -= 5;
     }
@@ -93,7 +93,7 @@ Player.prototype.move = function() {
       this.yPos += 5;
       this.xPos -= 5;
       this.facing = "leftDown";
-    if (collisionDetection(this)) {
+    if (collisionDetectionLoop(playerArray,wallArray)) {
       this.yPos -= 5;
       this.xPos += 5;
     }
@@ -101,7 +101,7 @@ Player.prototype.move = function() {
       this.yPos -= 5;
       this.xPos += 5;
       this.facing = "rightUp";
-    if (collisionDetection(this)) {
+    if (collisionDetectionLoop(playerArray,wallArray)) {
       this.yPos += 5;
       this.xPos -= 5;
     }
@@ -109,32 +109,32 @@ Player.prototype.move = function() {
       this.yPos -= 5;
       this.xPos -= 5;
       this.facing = "leftUp";
-    if (collisionDetection(this)) {
+    if (collisionDetectionLoop(playerArray,wallArray)) {
       this.yPos += 5;
       this.xPos += 5;
     }
   } else if(rightPressed) {
     this.xPos += 5;
     this.facing = "right";
-    if (collisionDetection(this)) {
+    if (collisionDetectionLoop(playerArray,wallArray)) {
       this.xPos -= 5;
     }
   } else if(leftPressed) {
     this.xPos -= 5;
     this.facing = "left";
-    if (collisionDetection(this)) {
+    if (collisionDetectionLoop(playerArray,wallArray)) {
       this.xPos += 5;
     }
   } else if(upPressed) {
     this.yPos -= 5;
     this.facing = "up";
-    if (collisionDetection(this)) {
+    if (collisionDetectionLoop(playerArray,wallArray)) {
       this.yPos += 5;
     }
   } else if(downPressed) {
     this.yPos += 5;
     this.facing = "down";
-    if (collisionDetection(this)) {
+    if (collisionDetectionLoop(playerArray,wallArray)) {
       this.yPos -= 5;
     }
   }
@@ -193,10 +193,10 @@ Bullet.prototype.fire = function() {
   } else if (sPressed) {
     this.dy = 10;
   }
-  // aPressed = false;
-  // sPressed = false;
-  // dPressed = false;
-  // wPressed = false;
+  aPressed = false;
+  sPressed = false;
+  dPressed = false;
+  wPressed = false;
 }
 
 Bullet.prototype.draw = function(canvasContext) {
@@ -288,89 +288,43 @@ function createWalls(numberOfWalls) {
 
 
 //Collision
-function xCollisionDetection(player) {
-  for (var i=0;i<wallArray.length;i++) {
-    var currentWallX = wallArray[i].xPos;
-    var currentWallY = wallArray[i].yPos;
-    var currentWallWidth = wallArray[i].width;
-    var currentWallHeight = wallArray[i].height;
-    if ((player.xPos < 0 || player.xPos + player.width > 600) || (player.xPos + player.width > currentWallX && player.xPos < currentWallX + currentWallWidth)) {
-      if (player.yPos + player.height > currentWallY + 5 && player.yPos < currentWallY + currentWallHeight - 5) {
-        return true;
-      } else if (player.xPos < 0 || player.xPos + player.width > 600) {
-        return true;
+
+function collisionDetectionLoop(object1Array,object2Array) {
+  for (var i=0;i<object1Array.length;i++) {
+    for (var j=0;j<object2Array.length;j++) {
+      if (collisionDetection(object1Array[i],object2Array[j])) {
+        return collisionDetection(object1Array[i],object2Array[j]);
       }
     }
   }
 }
 
-function xBallCollisionDetection(player) {
-  for (var i=0;i<ballArray.length;i++) {
-    var currentWallX = ballArray[i].xPos;
-    var currentWallY = ballArray[i].yPos;
-    var currentWallWidth = ballArray[i].width;
-    var currentWallHeight = ballArray[i].height;
-    if ((player.xPos < 0 || player.xPos + player.width > 600) || (player.xPos + player.width > currentWallX && player.xPos < currentWallX + currentWallWidth)) {
-      if (player.yPos + player.height > currentWallY + 5 && player.yPos < currentWallY + currentWallHeight - 5) {
-        return true;
-      } else if (player.xPos < 0 || player.xPos + player.width > 600) {
-        return true;
-      }
+
+function collisionDetection(player,object) {
+  if ((player.xPos < 0 || player.xPos + player.width > 600) || (player.xPos + player.width > object.xPos && player.xPos < object.xPos + object.width)) {
+    if (player.yPos + player.height > object.yPos + 5 && player.yPos < object.yPos + object.height - 5) {
+      return 'x';
+    } else if (player.xPos < 0 || player.xPos + player.width > 600) {
+      return 'x';
+    }
+  }
+
+  if ((player.yPos < 0 || player.yPos + player.height > 600) || (player.yPos + player.height > object.yPos && player.yPos < object.yPos + object.height)) {
+    if (player.xPos + player.width > object.xPos + 5 && player.xPos < object.xPos + object.width - 5) {
+      return 'y';
+    } else if (player.yPos < 0 || player.yPos + player.height > 600) {
+      return 'y';
     }
   }
 }
 
-function yCollisionDetection(player) {
-  for (var i=0;i<wallArray.length;i++) {
-    var currentWallX = wallArray[i].xPos;
-    var currentWallY = wallArray[i].yPos;
-    var currentWallWidth = wallArray[i].width;
-    var currentWallHeight = wallArray[i].height;
-    if ((player.yPos < 0 || player.yPos + player.height > 600) || (player.yPos + player.height > currentWallY && player.yPos < currentWallY + currentWallHeight)) {
-      if (player.xPos + player.width > currentWallX + 5 && player.xPos < currentWallX + currentWallWidth - 5) {
-        return true;
-      } else if (player.yPos < 0 || player.yPos + player.height > 600) {
-        return true;
-      }
-    }
-  }
-}
 
-function yBallCollisionDetection(player) {
-  for (var i=0;i<ballArray.length;i++) {
-    var currentWallX = ballArray[i].xPos;
-    var currentWallY = ballArray[i].yPos;
-    var currentWallWidth = ballArray[i].width;
-    var currentWallHeight = ballArray[i].height;
-    if ((player.yPos < 0 || player.yPos + player.height > 600) || (player.yPos + player.height > currentWallY && player.yPos < currentWallY + currentWallHeight)) {
-      if (player.xPos + player.width > currentWallX + 5 && player.xPos < currentWallX + currentWallWidth - 5) {
-        return true;
-      } else if (player.yPos < 0 || player.yPos + player.height > 600) {
-        return true;
-      }
-    }
-  }
-}
-
-function collisionDetection(player) {
-  if (yCollisionDetection(player) || xCollisionDetection(player)) {
-    return true;
-  }
-}
-
-function ballCollisionDetection(player) {
-  if (yBallCollisionDetection(player) || xBallCollisionDetection(player)) {
-    return true;
-  }
-}
 
 function doorCollision(player) {
   if ((player.xPos + player.width > Door.xPos && player.xPos < Door.xPos + Door.width) && (player.yPos + player.height > Door.yPos && player.yPos < Door.yPos + Door.height)) {
     Room.generate(player);
   }
 }
-
-
 
 
 
@@ -443,24 +397,19 @@ $(function(){
 
 
 
-
-
-
-
-
-
   function moveBalls(){
     for(var i=0; i<ballArray.length; i++){
       ballArray[i].xPos += ballArray[i].dx;
       ballArray[i].yPos += ballArray[i].dy;
+      for (var j=0; j<wallArray.length; j++){
+        if(collisionDetection(ballArray[i],wallArray[j])==='x') {
+          ballArray[i].dx = -ballArray[i].dx;
+        };
 
-      if(xCollisionDetection(ballArray[i])) {
-        ballArray[i].dx = -ballArray[i].dx;
-      };
-
-      if(yCollisionDetection(ballArray[i])){
-        ballArray[i].dy = -ballArray[i].dy;
-      };
+        if(collisionDetection(ballArray[i],wallArray[j])==='y'){
+          ballArray[i].dy = -ballArray[i].dy;
+        };
+      }
     }
   }
 
@@ -468,6 +417,15 @@ $(function(){
     for(var i=0; i<bulletArray.length; i++){
       bulletArray[i].xPos += bulletArray[i].dx;
       bulletArray[i].yPos += bulletArray[i].dy;
+      // for( var j=0; j<ballArray.length; j++) {
+      //   if(collisionDetection(bulletArray[i],ballArray[j])==='x') {
+      //     ballArray[j].dx = -ballArray[j].dx;
+      //   };
+      //
+      //   if(collisionDetection(bulletArray[i],ballArray[j])==='y'){
+      //     ballArray[j].dy = -ballArray[j].dy;
+      //   };
+      // }
     }
   }
 
@@ -486,7 +444,7 @@ $(function(){
     drawBullets();
     drawWalls();
     doorCollision(player1);
-    if (ballCollisionDetection(player1)) {
+    if (collisionDetectionLoop(playerArray,ballArray)) {
       health -= 1;
       $('#health').text(health);
     }
