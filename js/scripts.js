@@ -16,7 +16,6 @@ var dPressed = false;
 var wPressed = false;
 
 
-
 var Door = {
   xPos:600,
   yPos:300,
@@ -74,7 +73,7 @@ function Player() {
   this.yPos = 10,
   this.width = 30,
   this.height = 30,
-  this.totalHealth = 600,
+  this.totalHealth = 10,
   this.currentHealth = this.totalHealth,
   this.upgrades = ["bigShot"];
 }
@@ -384,12 +383,13 @@ $(function(){
   $('html').keypress(function(e) {
     if (e.keyCode === 32) {
       $('.introduction').hide();
-      $('.game').show();
+      $('.game').fadeIn();
     }
     if (e.keyCode === 114) {
         location.reload();
     }
   });
+
 
   var canvas = document.getElementById("canvas");
   var ctx = canvas.getContext("2d");
@@ -406,6 +406,7 @@ $(function(){
 
   var player1 = new Player();
   playerArray.push(player1);
+
 
 //player controller
 
@@ -523,6 +524,11 @@ $(function(){
     doorCollision(player1);
     if (collisionDetectionLoop(playerArray,ballArray)) {
       player1.currentHealth -= 2;
+      if (player1.currentHealth < 0) {
+        $('.game').hide();
+        $('#score').text(points);
+        $('.gameOver').fadeIn();
+      }
     }
     displayHealth(player1.currentHealth, player1.totalHealth);
     createBullet(player1);

@@ -33,9 +33,61 @@
   text-align: center;
   margin-top: 5vh;
   font-size: 30vh;
-  color: rgba(255, 255, 255, 1);;
+  color: rgba(255, 255, 255, 1);
 }
 
+.gameOver {
+  display: none;
+  height: 100vh;
+  width: 100vw;
+  background-image: url('../img/welcometohell.jpg');
+  background-size: 100vw 100vh;
+}
+
+.gameOver h1 {
+  position: absolute;
+  text-align: center;
+  margin-top: 5vh;
+  font-size: 30vh;
+  color: rgba(255, 255, 255, 1);
+}
+
+.gameOver h2 {
+  text-align: center;
+  color: white;
+  letter-spacing: 1vw;
+  text-decoration: underline;
+}
+
+.gameOver h2 .yourscore {
+  position: absolute;
+  margin-top: 73vh;
+  text-align: center;
+  font-size: 5vh;
+}
+
+.gameOver h2 .topscores {
+  position: absolute;
+  margin-top: 78vh
+  text-align: center;
+  font-size: 5vh;
+}
+
+.gameOver ul .scores{
+  text-align: center;
+  list-style: none;
+  font-size: 5vh;
+  position: absolute;
+  color: white;
+}
+
+.gameOver li .scores{
+  text-align: center;
+  list-style: none;
+  font-size: 5vh;
+  position: absolute;
+  color: white;
+}
 
 
 * { padding: 0; margin: 0; }
