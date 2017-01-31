@@ -79,7 +79,7 @@ function Player() {
   this.yPos = 10,
   this.width = 30,
   this.height = 30,
-  this.totalHealth = 10,
+  this.totalHealth = 600,
   this.currentHealth = this.totalHealth,
   this.upgrades = [];
 }
@@ -253,8 +253,6 @@ Item.prototype.draw = function(canvasContext) {
   }
   canvasContext.beginPath();
   canvasContext.rect(this.xPos, this.yPos, this.width, this.height);
-  canvasContext.fillStyle = color;
-  canvasContext.fill();
   canvasContext.drawImage(itemImg, this.xPos, this.yPos, this.width, this.height);
   canvasContext.closePath();
 }
