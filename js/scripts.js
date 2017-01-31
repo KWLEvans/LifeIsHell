@@ -15,6 +15,9 @@ var sPressed = false;
 var dPressed = false;
 var wPressed = false;
 
+var medicineImg = new Image();
+medicineImg.src = "img/medicine.png";
+
 
 
 var Door = {
@@ -227,13 +230,15 @@ function Item(xPos, yPos, type) {
   this.dx = 0;
   this.dy = 0;
   this.type = "";
+  this.img = ""
 }
 
 Item.prototype.draw = function(canvasContext) {
   canvasContext.beginPath();
   canvasContext.rect(this.xPos, this.yPos, this.width, this.height);
-  canvasContext.fillStyle = "lightseagreen";
+  canvasContext.fillStyle = "lightgrey";
   canvasContext.fill();
+  canvasContext.drawImage(medicineImg, this.xPos, this.yPos, this.width, this.height);
   canvasContext.closePath();
 }
 
@@ -394,15 +399,23 @@ $(function(){
   var canvas = document.getElementById("canvas");
   var ctx = canvas.getContext("2d");
 
-  // var floorImg = new Image();
-  // floorImg.src = "img/floor.png";
-  // floorImg.onload = function(){
-  //   // create pattern
-  //    var ptrn = ctx.createPattern(floorImg, 'repeat'); // Create a pattern with this image, and set it to "repeat".
-  //    ctx.fillStyle = ptrn;
-  //    ctx.fillRect(0, 0, canvas.width, canvas.height); // context.fillRect(x, y, width, height);
-  // }
-  //
+  var bgReady =false;
+  var bgImg = new Image();
+  bgImg.onload = function() {
+     bgReady = true;
+  };
+  bgImg.src = "img/floor.png";
+
+
+
+  var displayBgImg = function(){
+  if(bgReady){
+    ctx.fillStyle = ctx.createPattern(bgImg, "repeat");
+    ctx.fillRect(0, 0, 600, 600);
+ }
+}
+
+
 
   var player1 = new Player();
   playerArray.push(player1);
@@ -508,11 +521,9 @@ $(function(){
 ///////////////// Call all programs
   Room.generate(player1);
 
-
-
-
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    displayBgImg();
     player1.draw(ctx);
     Door.draw(ctx);
     OutDoor.draw(ctx);
@@ -529,9 +540,6 @@ $(function(){
     moveBullets();
     moveBalls();
     player1.move();
-
-
-
 
   }
   setInterval(draw, 10);
