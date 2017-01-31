@@ -346,6 +346,16 @@ function doorCollision(player) {
 
 ////////////////DOCUMENT READY
 $(function(){
+  $('html').keypress(function(e) {
+    if (e.keyCode === 32) {
+      $('.introduction').hide();
+      $('.game').show();
+    }
+    if (e.keyCode === 114) {
+        location.reload();
+    }
+  });
+
   var canvas = document.getElementById("canvas");
   var ctx = canvas.getContext("2d");
 
