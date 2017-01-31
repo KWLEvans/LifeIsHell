@@ -4,7 +4,8 @@ var ballArray = [];
 var bulletArray = [];
 var playerArray = [];
 var points = 0;
-var health = 10;
+var health = 600;
+var currentHealth = health;
 var leftPressed = false;
 var upPressed = false;
 var rightPressed = false;
@@ -139,6 +140,15 @@ Player.prototype.move = function() {
     }
   }
 }
+
+function displayHealth(currentHealth, health){
+   $("#health").css("width", health * (currentHealth/health) )
+   if( currentHealth < (health * 0.2) ){
+     $("#health").hide();
+     $("#health-danger").css("width", health * (currentHealth/health) )
+   }
+}
+
 
 function Wall(xPos,yPos, width, height) {
   this.xPos = xPos;
@@ -445,13 +455,13 @@ $(function(){
     drawWalls();
     doorCollision(player1);
     if (collisionDetectionLoop(playerArray,ballArray)) {
-      health -= 1;
-      $('#health').text(health);
+      currentHealth -= 2;
+      $('#health-number').text(currentHealth);
+      displayHealth(currentHealth, health);
     }
     createBullet(player1);
     moveBullets();
     moveBalls();
-
     player1.move();
 
 
