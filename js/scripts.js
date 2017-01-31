@@ -3,9 +3,9 @@ var wallArray = [];
 var ballArray = [];
 var bulletArray = [];
 var playerArray = [];
+var itemArray = [];
 var points = 0;
-var health = 600;
-var currentHealth = health;
+var roomNumber = 0;
 var leftPressed = false;
 var upPressed = false;
 var rightPressed = false;
@@ -58,12 +58,14 @@ function randomNumberGrid(min,max) {
 var Room = {
   generate: function(player) {
     points += 1;
+    roomNumber += 1;
     $('#points').text(points);
     wallArray = [];
     createBall(1);
     createWalls(3);
     createDoor();
     createOutDoor(player);
+    createItem();
   }
 }
 
@@ -72,7 +74,8 @@ function Player() {
   this.yPos = 10,
   this.width = 30,
   this.height = 30,
-  this.facing = "right"
+  this.totalHealth = 600,
+  this.currentHealth = this.totalHealth
 }
 
 Player.prototype.draw = function(canvasContext){
@@ -87,7 +90,6 @@ Player.prototype.move = function() {
   if(downPressed && rightPressed) {
     this.yPos += 5;
     this.xPos += 5;
-    this.facing = "rightDown";
     if (collisionDetectionLoop(playerArray,wallArray)) {
       this.yPos -= 5;
       this.xPos -= 5;
@@ -95,7 +97,6 @@ Player.prototype.move = function() {
   } else if(downPressed && leftPressed) {
       this.yPos += 5;
       this.xPos -= 5;
-      this.facing = "leftDown";
     if (collisionDetectionLoop(playerArray,wallArray)) {
       this.yPos -= 5;
       this.xPos += 5;
@@ -103,7 +104,6 @@ Player.prototype.move = function() {
   } else if(upPressed && rightPressed) {
       this.yPos -= 5;
       this.xPos += 5;
-      this.facing = "rightUp";
     if (collisionDetectionLoop(playerArray,wallArray)) {
       this.yPos += 5;
       this.xPos -= 5;
@@ -111,46 +111,42 @@ Player.prototype.move = function() {
   } else if(upPressed && leftPressed) {
       this.yPos -= 5;
       this.xPos -= 5;
-      this.facing = "leftUp";
     if (collisionDetectionLoop(playerArray,wallArray)) {
       this.yPos += 5;
       this.xPos += 5;
     }
   } else if(rightPressed) {
     this.xPos += 5;
-    this.facing = "right";
     if (collisionDetectionLoop(playerArray,wallArray)) {
       this.xPos -= 5;
     }
   } else if(leftPressed) {
     this.xPos -= 5;
-    this.facing = "left";
     if (collisionDetectionLoop(playerArray,wallArray)) {
       this.xPos += 5;
     }
   } else if(upPressed) {
     this.yPos -= 5;
-    this.facing = "up";
     if (collisionDetectionLoop(playerArray,wallArray)) {
       this.yPos += 5;
     }
   } else if(downPressed) {
     this.yPos += 5;
-    this.facing = "down";
     if (collisionDetectionLoop(playerArray,wallArray)) {
       this.yPos -= 5;
     }
   }
+  for (var i = 0; i < itemArray.length; i++) {
+    if (collisionDetection(itemArray[i], this).match(/[xy]+[^canvas]+/gi)) {
+      itemArray.splice(i, 1);
+      if (this.totalHealth - this.currentHealth < 100) {
+        this.currentHealth = this.totalHealth;
+      } else {
+      this.currentHealth += 100;
+      }
+    }
+  }
 }
-
-function displayHealth(currentHealth, health){
-   $("#health").css("width", health * (currentHealth/health) )
-   if( currentHealth < (health * 0.2) ){
-     $("#health").hide();
-     $("#health-danger").css("width", health * (currentHealth/health) )
-   }
-}
-
 
 function Wall(xPos,yPos, width, height) {
   this.xPos = xPos;
@@ -217,6 +213,23 @@ Bullet.prototype.draw = function(canvasContext) {
   canvasContext.beginPath();
   canvasContext.rect(this.xPos, this.yPos, this.width, this.height);
   canvasContext.fillStyle = "black";
+  canvasContext.fill();
+  canvasContext.closePath();
+}
+
+function Item(xPos, yPos) {
+  this.xPos = xPos;
+  this.yPos = yPos;
+  this.width = 20;
+  this.height = 20;
+  this.dx = 0;
+  this.dy = 0;
+}
+
+Item.prototype.draw = function(canvasContext) {
+  canvasContext.beginPath();
+  canvasContext.rect(this.xPos, this.yPos, this.width, this.height);
+  canvasContext.fillStyle = "lightseagreen";
   canvasContext.fill();
   canvasContext.closePath();
 }
@@ -300,6 +313,21 @@ function createWalls(numberOfWalls) {
   };
 };
 
+function createItem() {
+  if (randomNumber(1, 100) > 80) {
+    var randomXPosition = randomNumberGrid(1,29);
+    var randomYPosition = randomNumberGrid(1,29);
+    itemArray.push(new Item(randomXPosition, randomYPosition));
+  }
+}
+
+function displayHealth(currentHealth, health){
+  $("#health").css("width", health * (currentHealth/health) )
+  if( currentHealth < (health * 0.2) ){
+    $("#health").hide();
+    $("#health-danger").css("width", health * (currentHealth/health) )
+  }
+}
 
 //Collision
 
@@ -421,6 +449,12 @@ $(function(){
     };
   };
 
+  function drawItems() {
+    for (var i = 0; i < itemArray.length; i++) {
+      itemArray[i].draw(ctx);
+    }
+  }
+
 
 
   function moveBalls(){
@@ -468,11 +502,12 @@ $(function(){
     drawBalls();
     drawBullets();
     drawWalls();
+    drawItems();
     doorCollision(player1);
     if (collisionDetectionLoop(playerArray,ballArray)) {
-      currentHealth -= 2;
-      displayHealth(currentHealth, health);
+      player1.currentHealth -= 2;
     }
+    displayHealth(player1.currentHealth, player1.totalHealth);
     createBullet(player1);
     moveBullets();
     moveBalls();
