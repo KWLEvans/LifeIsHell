@@ -313,8 +313,12 @@ function createBullet(player) {
   if (aPressed || dPressed || sPressed || wPressed) {
     var newBullet = new Bullet(player);
     if (player.upgrades.includes("bigShot")) {
-      newBullet.width = 10;
-      newBullet.height = 10;
+      for (var i = 0; i < player.upgrades.length; i++) {
+        if (player.upgrades[i] === "bigShot") {
+        newBullet.width += 1;
+        newBullet.height += 1;
+        }
+      }
     }
     newBullet.fire();
     if (bulletArray.length>80) {
