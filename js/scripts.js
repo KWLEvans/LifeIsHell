@@ -75,7 +75,8 @@ function Player() {
   this.width = 30,
   this.height = 30,
   this.totalHealth = 600,
-  this.currentHealth = this.totalHealth
+  this.currentHealth = this.totalHealth,
+  this.upgrades = ["bigShot"];
 }
 
 Player.prototype.draw = function(canvasContext){
@@ -138,7 +139,8 @@ Player.prototype.move = function() {
   }
   for (var i = 0; i < itemArray.length; i++) {
     if (collisionDetection(itemArray[i], this).match(/[xy]+[^canvas]+/gi)) {
-      itemArray.splice(i, 1);
+      var pickUp = itemArray.splice(i, 1);
+
       if (this.totalHealth - this.currentHealth < 100) {
         this.currentHealth = this.totalHealth;
       } else {
@@ -217,13 +219,14 @@ Bullet.prototype.draw = function(canvasContext) {
   canvasContext.closePath();
 }
 
-function Item(xPos, yPos) {
+function Item(xPos, yPos, type) {
   this.xPos = xPos;
   this.yPos = yPos;
   this.width = 20;
   this.height = 20;
   this.dx = 0;
   this.dy = 0;
+  this.type = "";
 }
 
 Item.prototype.draw = function(canvasContext) {
@@ -295,6 +298,10 @@ function createBall(numberOfBalls) {
 function createBullet(player) {
   if (aPressed || dPressed || sPressed || wPressed) {
     var newBullet = new Bullet(player);
+    if (player.upgrades.includes("bigShot")) {
+      newBullet.width = 10;
+      newBullet.height = 10;
+    }
     newBullet.fire();
     if (bulletArray.length>80) {
       bulletArray.splice(0, 1);
