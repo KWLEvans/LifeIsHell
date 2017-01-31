@@ -157,6 +157,8 @@ function Wall(xPos,yPos, width, height) {
   this.yPos = yPos;
   this.width = width;
   this.height = height;
+  this.dx = 0;
+  this.dy = 0;
 }
 
 Wall.prototype.draw = function(canvasContext) {
@@ -313,23 +315,24 @@ function collisionDetectionLoop(object1Array,object2Array) {
 
 
 function collisionDetection(player,object) {
+  var collisionType = "";
   if ((player.xPos < 0 || player.xPos + player.width > 600) || (player.xPos + player.width > object.xPos && player.xPos < object.xPos + object.width)) {
     if (player.yPos + player.height > object.yPos + 5 && player.yPos < object.yPos + object.height - 5) {
-      return 'x';
+      collisionType += 'x';
     } else if (player.xPos < 0 || player.xPos + player.width > 600) {
-      return 'x';
+      collisionType += 'canvasx';
     }
   }
 
   if ((player.yPos < 0 || player.yPos + player.height > 600) || (player.yPos + player.height > object.yPos && player.yPos < object.yPos + object.height)) {
     if (player.xPos + player.width > object.xPos + 5 && player.xPos < object.xPos + object.width - 5) {
-      return 'y';
+      collisionType += 'y';
     } else if (player.yPos < 0 || player.yPos + player.height > 600) {
-      return 'y';
+      collisionType += 'canvasy';
     }
   }
+  return collisionType;
 }
-
 
 
 function doorCollision(player) {
@@ -425,11 +428,11 @@ $(function(){
       ballArray[i].xPos += ballArray[i].dx;
       ballArray[i].yPos += ballArray[i].dy;
       for (var j=0; j<wallArray.length; j++){
-        if(collisionDetection(ballArray[i],wallArray[j])==='x') {
+        if(collisionDetection(ballArray[i],wallArray[j])==='x' || collisionDetection(ballArray[i],wallArray[j])==='canvasx') {
           ballArray[i].dx = -ballArray[i].dx;
         };
 
-        if(collisionDetection(ballArray[i],wallArray[j])==='y'){
+        if(collisionDetection(ballArray[i],wallArray[j])==='y' || collisionDetection(ballArray[i],wallArray[j])==='canvasy'){
           ballArray[i].dy = -ballArray[i].dy;
         };
       }
@@ -440,15 +443,14 @@ $(function(){
     for(var i=0; i<bulletArray.length; i++){
       bulletArray[i].xPos += bulletArray[i].dx;
       bulletArray[i].yPos += bulletArray[i].dy;
-      // for( var j=0; j<ballArray.length; j++) {
-      //   if(collisionDetection(bulletArray[i],ballArray[j])==='x') {
-      //     ballArray[j].dx = -ballArray[j].dx;
-      //   };
-      //
-      //   if(collisionDetection(bulletArray[i],ballArray[j])==='y'){
-      //     ballArray[j].dy = -ballArray[j].dy;
-      //   };
-      // }
+      for( var j=0; j<ballArray.length; j++) {
+        if(collisionDetection(bulletArray[i],ballArray[j])==='xy') {
+          console.log("bullet/ball collision");
+          console.log(ballArray);
+          ballArray.splice(j, 1);
+          console.log(ballArray);
+        };
+      }
     }
   }
 
