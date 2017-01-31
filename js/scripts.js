@@ -1,6 +1,7 @@
 /////////////////GLOBAL VARIABLES
 var wallArray = [];
 var ballArray = [];
+var bulletArray = [];
 var points = 0;
 var health = 10;
 
@@ -23,7 +24,8 @@ var player = {
   xPos: 10,
   yPos: 10,
   width: 30,
-  height: 30
+  height: 30,
+  facing: "right"
 };
 
 
@@ -73,6 +75,28 @@ function Ball(xPos,yPos,width,height, dx, dy) {
   this.dy = dy;
 }
 
+function Bullet(facing) {
+  this.xPos = player.xPos + 15,
+  this.yPos = player.yPos + 15,
+  this.width = 5,
+  this.height = 5,
+  this.dx = 0,
+  this.dy = 0,
+  this.facing = facing,
+  this.fire = function() {
+    if (this.facing.match(/d/gi)) {
+      this.dx = 5;
+    } else if (this.facing.match(/a/gi)) {
+      this.dx = -5;
+    }
+    if (this.facing.match(/w/gi)) {
+      this.dy = -5;
+    } else if (this.facing.match(/s/gi)) {
+      this.dy = 5;
+    }
+  }
+}
+
 function randomNumber(min,max) {
   return Math.floor(Math.random()*(max-min)+min);
 };
@@ -113,6 +137,13 @@ function createDoor() {
       Door.xPos = randomNumberGrid(1, 29);
     }
   }
+}
+
+function createBullet(facing) {
+  var newBullet = new Bullet(facing);
+  newBullet.fire();
+  bulletArray.push(newBullet)
+  console.log(bulletArray);
 }
 
 function xCollisionDetection(player) {
@@ -225,6 +256,10 @@ $(function(){
   var upPressed = false;
   var rightPressed = false;
   var downPressed = false;
+  var aPressed = false;
+  var sPressed = false;
+  var dPressed = false;
+  var wPressed = false;
   document.addEventListener("keydown", keyDownHandler, false);
   document.addEventListener("keyup", keyUpHandler, false);
   //player controller ends
@@ -254,9 +289,39 @@ $(function(){
     ctx.closePath();
   }
 
+  function drawBullet(xPos, yPos, width, height) {
+    ctx.beginPath();
+    ctx.rect(xPos, yPos, width, height);
+    ctx.fillStyle = "black";
+    ctx.fill();
+    ctx.closePath();
+  }
+
+  function drawBullets() {
+    for (var i = 0; i < bulletArray.length; i++) {
+      var currentBullet = bulletArray[i];
+      drawBullet(currentBullet.xPos, currentBullet.yPos, currentBullet.width, currentBullet.height);
+    }
+  }
+
+  function drawBall(xPos,yPos,width,height) {
+    ctx.beginPath();
+    ctx.rect(xPos, yPos, width, height);
+    ctx.fillStyle = "#0095DD";
+    ctx.fill();
+    ctx.closePath();
+  };
+
+  function drawBalls() {
+    for (var i=0; i< ballArray.length; i++) {
+      var currentBall = ballArray[i];
+      drawBall(currentBall.xPos, currentBall.yPos, currentBall.width, currentBall.height);
+    };
+  };
 
   //CONTROLLER Function
   function keyDownHandler(e) {
+    console.log(e.keyCode);
     if(e.keyCode === 39) {
       rightPressed = true;
     } else if (e.keyCode === 40) {
@@ -265,6 +330,14 @@ $(function(){
       leftPressed = true;
     } else if(e.keyCode === 38) {
       upPressed = true;
+    } else if(e.keyCode === 65) {
+      aPressed = true;
+    } else if(e.keyCode === 83) {
+      sPressed = true;
+    } else if(e.keyCode === 68) {
+      dPressed = true;
+    } else if(e.keyCode === 87) {
+      wPressed = true;
     }
   }
 
@@ -281,21 +354,8 @@ $(function(){
   }
   //Controller Function Ends
 
-  function drawBalls() {
-    for (var i=0; i< ballArray.length; i++) {
-      var currentBall = ballArray[i];
-      drawBall(currentBall.xPos, currentBall.yPos, currentBall.width, currentBall.height);
-    };
-  };
 
 
-  function drawBall(xPos,yPos,width,height) {
-    ctx.beginPath();
-    ctx.rect(xPos, yPos, width, height);
-    ctx.fillStyle = "#0095DD";
-    ctx.fill();
-    ctx.closePath();
-  };
 
 
 
@@ -315,20 +375,25 @@ $(function(){
     ctx.closePath();
   };
 
-  var moveBalls = function(){
+  function moveBalls(){
     for(var i=0; i<ballArray.length; i++){
       ballArray[i].xPos += ballArray[i].dx;
       ballArray[i].yPos += ballArray[i].dy;
 
       if(xCollisionDetection(ballArray[i])) {
         ballArray[i].dx = -ballArray[i].dx;
-        console.log('x collision');
       };
 
       if(yCollisionDetection(ballArray[i])){
         ballArray[i].dy = -ballArray[i].dy;
-        console.log('y collision');
       };
+    }
+  }
+
+  function moveBullets() {
+    for(var i=0; i<bulletArray.length; i++){
+      bulletArray[i].xPos += bulletArray[i].dx;
+      bulletArray[i].yPos += bulletArray[i].dy;
     }
   }
 
@@ -342,6 +407,7 @@ $(function(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawPlayer();
     drawBalls();
+    drawBullets();
     drawWalls();
     drawDoor();
     drawOutDoor();
@@ -351,12 +417,13 @@ $(function(){
       $('#health').text(health);
     }
 
-
+    moveBullets();
     moveBalls();
 
     if(downPressed && rightPressed) {
       player.yPos += 5;
       player.xPos += 5;
+      player.facing = "rightDown";
       if (collisionDetection(player)) {
         player.yPos -= 5;
         player.xPos -= 5;
@@ -364,6 +431,7 @@ $(function(){
     } else if(downPressed && leftPressed) {
         player.yPos += 5;
         player.xPos -= 5;
+        player.facing = "leftDown";
       if (collisionDetection(player)) {
         player.yPos -= 5;
         player.xPos += 5;
@@ -371,6 +439,7 @@ $(function(){
     } else if(upPressed && rightPressed) {
         player.yPos -= 5;
         player.xPos += 5;
+        player.facing = "rightUp";
       if (collisionDetection(player)) {
         player.yPos += 5;
         player.xPos -= 5;
@@ -378,39 +447,62 @@ $(function(){
     } else if(upPressed && leftPressed) {
         player.yPos -= 5;
         player.xPos -= 5;
+        player.facing = "leftUp";
       if (collisionDetection(player)) {
         player.yPos += 5;
         player.xPos += 5;
       }
     } else if(rightPressed) {
       player.xPos += 5;
+      player.facing = "right";
       if (collisionDetection(player)) {
         player.xPos -= 5;
         //Decrement health
       }
     } else if(leftPressed) {
       player.xPos -= 5;
+      player.facing = "left";
       if (collisionDetection(player)) {
         player.xPos += 5;
       }
     } else if(upPressed) {
       player.yPos -= 5;
+      player.facing = "up";
       if (collisionDetection(player)) {
         player.yPos += 5;
       }
     } else if(downPressed) {
       player.yPos += 5;
+      player.facing = "down";
       if (collisionDetection(player)) {
         player.yPos -= 5;
       }
     }
+
+    if (aPressed && sPressed) {
+      createBullet("as");
+    } else if (aPressed && wPressed) {
+      createBullet("aw");
+    } else if (dPressed && wPressed) {
+      createBullet("dw");
+    } else if (dPressed && sPressed) {
+      createBullet("ds");
+    } else if (aPressed) {
+      createBullet("a");
+    } else if (wPressed) {
+      createBullet("w");
+    } else if (dPressed) {
+      createBullet("d");
+    } else if (sPressed) {
+      createBullet("s");
+    }
+    aPressed = false;
+    sPressed = false;
+    dPressed = false;
+    wPressed = false;
   }
 
 
+
   setInterval(draw, 10);
-
-  $("#generateButton").click(function() {
-    Room.generate();
-  });
-
 });
