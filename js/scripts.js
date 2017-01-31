@@ -15,6 +15,8 @@ var sPressed = false;
 var dPressed = false;
 var wPressed = false;
 
+
+
 var Door = {
   xPos:600,
   yPos:300,
@@ -343,6 +345,17 @@ function doorCollision(player) {
 $(function(){
   var canvas = document.getElementById("canvas");
   var ctx = canvas.getContext("2d");
+
+  // var floorImg = new Image();
+  // floorImg.src = "img/floor.png";
+  // floorImg.onload = function(){
+  //   // create pattern
+  //    var ptrn = ctx.createPattern(floorImg, 'repeat'); // Create a pattern with this image, and set it to "repeat".
+  //    ctx.fillStyle = ptrn;
+  //    ctx.fillRect(0, 0, canvas.width, canvas.height); // context.fillRect(x, y, width, height);
+  // }
+  //
+
   var player1 = new Player();
   playerArray.push(player1);
 
@@ -456,7 +469,6 @@ $(function(){
     doorCollision(player1);
     if (collisionDetectionLoop(playerArray,ballArray)) {
       currentHealth -= 2;
-      $('#health-number').text(currentHealth);
       displayHealth(currentHealth, health);
     }
     createBullet(player1);
