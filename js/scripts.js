@@ -4,6 +4,7 @@ var ballArray = [];
 var bulletArray = [];
 var playerArray = [];
 var itemArray = [];
+var availablePickUpsArray = ["health", "bigShot"];
 var points = 0;
 var roomNumber = 0;
 var leftPressed = false;
@@ -18,6 +19,8 @@ var wPressed = false;
 var medicineImg = new Image();
 medicineImg.src = "img/medicine.png";
 
+var bigShotImg = new Image();
+bigShotImg.src = "img/bigshot.jpg";
 
 
 var Door = {
@@ -50,7 +53,7 @@ var OutDoor = {
 
 
 function randomNumber(min,max) {
-  return Math.floor(Math.random()*(max-min)+min);
+  return Math.floor(Math.random()*(max-min + 1)+min);
 };
 
 function randomNumberGrid(min,max) {
@@ -79,7 +82,7 @@ function Player() {
   this.height = 30,
   this.totalHealth = 600,
   this.currentHealth = this.totalHealth,
-  this.upgrades = ["bigShot"];
+  this.upgrades = [];
 }
 
 Player.prototype.draw = function(canvasContext){
@@ -143,13 +146,22 @@ Player.prototype.move = function() {
   for (var i = 0; i < itemArray.length; i++) {
     if (collisionDetection(itemArray[i], this).match(/[xy]+[^canvas]+/gi)) {
       var pickUp = itemArray.splice(i, 1);
-
-      if (this.totalHealth - this.currentHealth < 100) {
-        this.currentHealth = this.totalHealth;
-      } else {
-      this.currentHealth += 100;
-      }
+      this.pickUp(pickUp[0]);
     }
+  }
+}
+
+Player.prototype.pickUp = function(pickUp) {
+  console.log("pick up method");
+  console.log(pickUp);
+  if (pickUp.type === "health") {
+    if (this.totalHealth - this.currentHealth < 100) {
+      this.currentHealth = this.totalHealth;
+    } else {
+    this.currentHealth += 100;
+    }
+  } else if (pickUp.type === "bigShot") {
+    this.upgrades.push("bigShot");
   }
 }
 
@@ -229,16 +241,22 @@ function Item(xPos, yPos, type) {
   this.height = 20;
   this.dx = 0;
   this.dy = 0;
-  this.type = "";
   this.img = ""
+  this.type = type;
 }
 
 Item.prototype.draw = function(canvasContext) {
+  var color;
+  if (this.type === "health") {
+    itemImg = medicineImg;
+  } else if (this.type === "bigShot") {
+    itemImg = bigShotImg;
+  }
   canvasContext.beginPath();
   canvasContext.rect(this.xPos, this.yPos, this.width, this.height);
-  canvasContext.fillStyle = "lightgrey";
+  canvasContext.fillStyle = color;
   canvasContext.fill();
-  canvasContext.drawImage(medicineImg, this.xPos, this.yPos, this.width, this.height);
+  canvasContext.drawImage(itemImg, this.xPos, this.yPos, this.width, this.height);
   canvasContext.closePath();
 }
 
@@ -291,11 +309,9 @@ function createBall(numberOfBalls) {
   var dx = 2;
   var dy = -2
   for (var i = 1; i<=numberOfBalls; i++) {
-    var randomBallWidth = randomNumberGrid(1,1);
-    var randomBallHeight = randomNumberGrid(1,1);
-    var randomBallX = randomNumberGrid(0, 30-(randomBallWidth/20));
-    var randomBallY = randomNumberGrid(0, 30-(randomBallHeight/20));
-    ballArray.push(new Ball(randomBallX, randomBallY, randomBallWidth, randomBallHeight, dx, dy));
+    var randomBallX = randomNumberGrid(0, 29);
+    var randomBallY = randomNumberGrid(0, 29);
+    ballArray.push(new Ball(randomBallX, randomBallY, 20, 20, dx, dy));
   }
 }
 
@@ -326,10 +342,12 @@ function createWalls(numberOfWalls) {
 };
 
 function createItem() {
-  if (randomNumber(1, 100) > 80) {
+  if (randomNumber(1, 4) === 3) {
     var randomXPosition = randomNumberGrid(1,29);
     var randomYPosition = randomNumberGrid(1,29);
-    itemArray.push(new Item(randomXPosition, randomYPosition));
+    var randomItem = availablePickUpsArray[randomNumber(0, availablePickUpsArray.length - 1)];
+    itemArray.push(new Item(randomXPosition, randomYPosition, randomItem));
+    console.log(itemArray);
   }
 }
 
