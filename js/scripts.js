@@ -137,8 +137,8 @@ function Player() {
   this.totalHealth = 600,
   this.currentHealth = this.totalHealth,
   this.upgrades = [];
-  this.bulletSizeModifier = 5;
-  this.bulletSplits = 1;
+  this.bulletSizeModifier = 15;
+  this.bulletSplits = 4;
 }
 
 Player.prototype.draw = function(canvasContext){
@@ -275,7 +275,7 @@ function Bullet(player) {
   this.height = 5,
   this.dx = 0,
   this.dy = 0,
-  this.ricochet = false,
+  this.ricochet = true,
   this.timesBounced = 0
 }
 
@@ -496,7 +496,7 @@ function createWalls(numberOfWalls) {
 };
 
 function createItem() {
-  var spawnChance = randomNumber(1, 10);
+  var spawnChance = 1
   if (spawnChance > 6) {
     var randomXPosition = randomNumberGrid(1,29);
     var randomYPosition = randomNumberGrid(1,29);
