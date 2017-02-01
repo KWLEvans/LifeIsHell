@@ -1,6 +1,31 @@
+body {
+  background-image: url("../img/general/background.png");
+}
+
+#hardware {
+  height: auto;
+  display: none;
+  position: absolute;
+  top: 10%;
+  left: 20%;
+  margin: 0 auto;
+
+}
+
+#hardware img {
+  width: 1400px;
+  height: auto;
+  border: 8px solid black;
+  border-radius: 10px;
+  box-shadow: 2px 2px 2px 1px rgba(3, 50, 3, 0.8);
+}
+
 
 .game {
   display: none;
+  position: absolute;
+  top: 110px;
+  left: 130px;
 }
 
 .introduction {
@@ -89,15 +114,21 @@
   color: white;
 }
 
-
 * { padding: 0; margin: 0; }
-canvas { display: block; margin: 0 auto; }
+
+canvas {
+  display: block;
+  margin: 0 auto;
+  border: 2px solid black;
+  border-radius: 5px;
+}
+
 
 #health-container{
   position: relative;
   width: 600px;
   height: 20px;
-  border: 1px solid black;
+  border: 2px solid darkgreen;
   border-radius: 10%;
   margin: 0 auto;
 }

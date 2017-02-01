@@ -555,6 +555,7 @@ $(function(){
   $('html').keypress(function(e) {
     if (e.keyCode === 32) {
       $('.introduction').hide();
+      $('#hardware').show();
       $('.game').fadeIn();
     }
     if (e.keyCode === 114) {
