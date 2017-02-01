@@ -81,6 +81,7 @@ var Room = {
     points += 1;
     roomNumber += 1;
     $('#points').text(points);
+    bulletArray = [];
     wallArray = [];
     createBall(roomNumber/2);
     createWalls(3);
@@ -227,6 +228,10 @@ Player.prototype.pickUp = function(pickUp) {
     if (!this.upgrades.includes("splitShot")) {
       this.upgrades.push("splitShot");
     }
+  } else if (pickUp.type === "ricochet") {
+    if (!this.upgrades.includes("ricochet")) {
+      this.upgrades.push("ricochet");
+    }
   }
 }
 
@@ -269,7 +274,9 @@ function Bullet(player) {
   this.width = 5,
   this.height = 5,
   this.dx = 0,
-  this.dy = 0
+  this.dy = 0,
+  this.ricochet = false,
+  this.timesBounced = 0
 }
 
 Bullet.prototype.setDirection = function() {
@@ -385,7 +392,7 @@ Item.prototype.draw = function(canvasContext) {
   var color;
   if (this.type === "health") {
     itemImg = medicineImg;
-  } else if (this.type === "bigShot" || this.type === "splitShot") {
+  } else if (this.type === "bigShot" || this.type === "splitShot" || this.type === "ricochet") {
     itemImg = bigShotImg;
   }
   canvasContext.beginPath();
@@ -457,6 +464,9 @@ function createBullet(player) {
       var newBullet = new Bullet(player);
       newBullet.height += player.bulletSizeModifier;
       newBullet.width += player.bulletSizeModifier;
+      if (player.upgrades.includes("ricochet")) {
+        newBullet.ricochet = true;
+      }
       newBulletsArray.push(newBullet);
     }
 
@@ -469,8 +479,8 @@ function createBullet(player) {
     for (var i = 0; i < newBulletsArray.length; i++) {
       bulletArray.push(newBulletsArray[i]);
     }
-    if (bulletArray.length>80) {
-      bulletArray.splice(0, 1);
+    if (bulletArray.length>30) {
+      bulletArray.splice(0, player.bulletSplits);
     }
   }
 }
@@ -486,7 +496,15 @@ function createWalls(numberOfWalls) {
 };
 
 function createItem() {
-  if (randomNumber(1, 4) === 3) {
+  var spawnChance = randomNumber(1, 10);
+  if (spawnChance > 6) {
+    var randomXPosition = randomNumberGrid(1,29);
+    var randomYPosition = randomNumberGrid(1,29);
+    var randomItem = availablePickUpsArray[randomNumber(0, availablePickUpsArray.length - 1)];
+    itemArray.push(new Item(randomXPosition, randomYPosition, randomItem));
+    console.log(itemArray);
+  }
+  if (spawnChance === 10) {
     var randomXPosition = randomNumberGrid(1,29);
     var randomYPosition = randomNumberGrid(1,29);
     var randomItem = availablePickUpsArray[randomNumber(0, availablePickUpsArray.length - 1)];
@@ -664,11 +682,24 @@ $(function(){
       bulletArray[i].yPos += bulletArray[i].dy;
       for( var j=0; j<ballArray.length; j++) {
         if(collisionDetection(bulletArray[i],ballArray[j])==='xy') {
-          console.log("bullet/ball collision");
-          console.log(ballArray);
           ballArray.splice(j, 1);
-          console.log(ballArray);
         };
+      }
+      if (bulletArray[i].ricochet === true) {
+        for (var k = 0; k < wallArray.length; k++) {
+          if(collisionDetection(bulletArray[i],wallArray[k])==='x' || collisionDetection(bulletArray[i],wallArray[k])==='canvasx') {
+            bulletArray[i].dx = -bulletArray[i].dx;
+            bulletArray[i].timesBounced++;
+          };
+
+          if(collisionDetection(bulletArray[i],wallArray[k])==='y' || collisionDetection(bulletArray[i],wallArray[k])==='canvasy'){
+            bulletArray[i].dy = -bulletArray[i].dy;
+            bulletArray[i].timesBounced++;
+          };
+        }
+      }
+      if (bulletArray[i].timesBounced > 50) {
+        bulletArray.splice(i, 1);
       }
     }
   }
