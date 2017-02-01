@@ -4,7 +4,7 @@ var ballArray = [];
 var bulletArray = [];
 var playerArray = [];
 var itemArray = [];
-var availablePickUpsArray = ["health", "bigShot"];
+var availablePickUpsArray = ["health", "bigShot", "splitShot"];
 var points = 0;
 var roomNumber = 0;
 var leftPressed = false;
@@ -136,6 +136,8 @@ function Player() {
   this.totalHealth = 600,
   this.currentHealth = this.totalHealth,
   this.upgrades = [];
+  this.bulletSizeModifier = 5;
+  this.bulletSplits = 1;
 }
 
 Player.prototype.draw = function(canvasContext){
@@ -195,6 +197,7 @@ Player.prototype.move = function() {
       this.yPos -= this.moveSpeed;
     }
   }
+  //Item pick-up check
   for (var i = 0; i < itemArray.length; i++) {
     if (collisionDetection(itemArray[i], this).match(/[xy]+[^canvas]+/gi)) {
       var pickUp = itemArray.splice(i, 1);
@@ -213,7 +216,17 @@ Player.prototype.pickUp = function(pickUp) {
     this.currentHealth += 100;
     }
   } else if (pickUp.type === "bigShot") {
-    this.upgrades.push("bigShot");
+    this.bulletSizeModifier += 2;
+    if (!this.upgrades.includes("bigShot")) {
+      this.upgrades.push("bigShot");
+    }
+  } else if (pickUp.type === "splitShot") {
+    if (this.bulletSplits < 8) {
+      this.bulletSplits += 1;
+    }
+    if (!this.upgrades.includes("splitShot")) {
+      this.upgrades.push("splitShot");
+    }
   }
 }
 
@@ -259,7 +272,7 @@ function Bullet(player) {
   this.dy = 0
 }
 
-Bullet.prototype.fire = function() {
+Bullet.prototype.setDirection = function() {
   if (dPressed) {
     this.dx = 10;
   } else if (aPressed) {
@@ -276,78 +289,79 @@ Bullet.prototype.fire = function() {
   wPressed = false;
 }
 
-// function splitShot(splitBullets) {
-//   var bulletTrajectories;
-//   if (dPressed) {
-//     bulletTrajectories = multiShotCases(10, "x", splitBullets);
-//   } else if (aPressed) {
-//     bulletTrajectories = multiShotCases(-10, "x", splitBullets);
-//   }
-//   if (wPressed) {
-//     bulletTrajectories = multiShotCases(-10, "y", splitBullets);
-//   } else if (sPressed) {
-//     bulletTrajectories = multiShotCases(10, "y", splitBullets);
-//   }
-//   aPressed = false;
-//   sPressed = false;
-//   dPressed = false;
-//   wPressed = false;
-//   return bulletTrajectories;
-// }
-//
-// function multiShotCases(origin, direction, splitBullets) {
-//   var direction1;
-//   var direction2;
-//   if (direction === "x") {
-//     direction1 === "dx";
-//     direction2 === "dy";
-//   } else {
-//     //direction === y
-//     direction1 === "dy";
-//     direction2 === "dx";
-//   }
-//
-//   if (splitBullets.length >= 2) {
-//     //Right down
-//     splitBullets[0][direction1] = origin;
-//     splitBullets[0][direction2] = origin;
-//     //Right up
-//     splitBullets[1][direction1] = origin;
-//     splitBullets[1][direction2] = -origin;
-//   }
-//   if (splitBullets.length === 3) {
-//     //Right
-//     splitBullets[2][direction1] = origin;
-//     splitBullets[2][direction2] = origin - 10;
-//   }
-//   if (splitBullets.length >= 4) {
-//     //Left down
-//     splitBullets[2][direction1] = -origin;
-//     splitBullets[2][direction2] = origin;
-//     //Left up
-//     splitBullets[3][direction1] = -origin;
-//     splitBullets[3][direction2] = -origin;
-//   }
-//   if (splitBullets.length >= 5) {
-//     //Right
-//     splitBullets[4][direction1] = origin;
-//   }
-//   if (splitBullets.length >= 6) {
-//     //Left
-//     splitBullets[5][direction1] = -origin;
-//   }
-//   if (splitBullets.length >= 7) {
-//     //Down
-//     splitBullets[6][direction1] = origin -10;
-//     splitBullets[6][direction2] = origin;
-//   }
-//   if (splitBullets.length === 8) {
-//     //Up
-//     splitBullets[7][direction1] = origin -10;
-//     splitBullets[7][direction2] = -origin;
-//   }
-//   return splitBullets;
-// }
+//Used to set trajectories for multiple bullets at once
+function splitShot(bulletsArray) {
+  var bulletTrajectories;
+  if (dPressed) {
+    bulletTrajectories = multiShotCases(10, "x", bulletsArray);
+  } else if (aPressed) {
+    bulletTrajectories = multiShotCases(-10, "x", bulletsArray);
+  }
+  if (wPressed) {
+    bulletTrajectories = multiShotCases(-10, "y", bulletsArray);
+  } else if (sPressed) {
+    bulletTrajectories = multiShotCases(10, "y", bulletsArray);
+  }
+  aPressed = false;
+  sPressed = false;
+  dPressed = false;
+  wPressed = false;
+  return bulletTrajectories;
+}
+
+function multiShotCases(velocity, axis, bulletsArray) {
+  var direction1 = "";
+  var direction2 = "";
+  if (axis === "x") {
+    direction1 = "dx";
+    direction2 = "dy";
+  } else {
+    //direction === y
+    direction1 = "dy";
+    direction2 = "dx";
+  }
+
+  if (bulletsArray.length >= 2) {
+    //Right down
+    bulletsArray[0][direction1] = velocity;
+    bulletsArray[0][direction2] = velocity;
+    //Right up
+    bulletsArray[1][direction1] = velocity;
+    bulletsArray[1][direction2] = -velocity;
+  }
+  if (bulletsArray.length === 3) {
+    //Right
+    bulletsArray[2][direction1] = velocity;
+    bulletsArray[2][direction2] = 0;
+  }
+  if (bulletsArray.length >= 4) {
+    //Left down
+    bulletsArray[2][direction1] = -velocity;
+    bulletsArray[2][direction2] = velocity;
+    //Left up
+    bulletsArray[3][direction1] = -velocity;
+    bulletsArray[3][direction2] = -velocity;
+  }
+  if (bulletsArray.length >= 5) {
+    //Right
+    bulletsArray[4][direction1] = velocity;
+  }
+  if (bulletsArray.length >= 6) {
+    //Left
+    bulletsArray[5][direction1] = -velocity;
+  }
+  if (bulletsArray.length >= 7) {
+    //Down
+    bulletsArray[6][direction1] = 0;
+    bulletsArray[6][direction2] = velocity;
+  }
+  if (bulletsArray.length === 8) {
+    //Up
+    bulletsArray[7][direction1] = 0;
+    bulletsArray[7][direction2] = -velocity;
+  }
+  return bulletsArray;
+}
 
 Bullet.prototype.draw = function(canvasContext) {
   canvasContext.beginPath();
@@ -363,7 +377,7 @@ function Item(xPos, yPos, type) {
   this.height = 30;
   this.dx = 0;
   this.dy = 0;
-  this.img = ""
+  this.img = "";
   this.type = type;
 }
 
@@ -371,7 +385,7 @@ Item.prototype.draw = function(canvasContext) {
   var color;
   if (this.type === "health") {
     itemImg = medicineImg;
-  } else if (this.type === "bigShot") {
+  } else if (this.type === "bigShot" || this.type === "splitShot") {
     itemImg = bigShotImg;
   }
   canvasContext.beginPath();
@@ -438,40 +452,26 @@ function createBall(numberOfBalls) {
 
 function createBullet(player) {
   if (aPressed || dPressed || sPressed || wPressed) {
-    // var newBulletsArray = [];
-    // if (player.upgrades.includes("splitShot")) {
-    //   var splitShotCount = 0;
-    //   for (var i = 0; i < player.upgrades.length; i++) {
-    //     if(player.upgrades[i] === "splitShot" && splitShotCount < 8) {
-    //       splitShotCount++;
-    //       for (var i = 0; i < splitShotCount; i++) {
-    //         var newBullet = new Bullet(player);
-    //         newBulletsArray.push(newBullet);
-    //       }
-    //     }
-    //   }
-    //   newBulletsArray = splitShot(newBulletsArray);
-    // }
-    var newBullet = new Bullet(player);
-    if (player.upgrades.includes("bigShot")) {
-      for (var i = 0; i < player.upgrades.length; i++) {
-        if (player.upgrades[i] === "bigShot") {
-        newBullet.width += 2;
-        newBullet.height += 2;
-        }
-      }
+    var newBulletsArray = [];
+    for (var i = 0; i < player.bulletSplits; i++) {
+      var newBullet = new Bullet(player);
+      newBullet.height += player.bulletSizeModifier;
+      newBullet.width += player.bulletSizeModifier;
+      newBulletsArray.push(newBullet);
     }
 
-    newBullet.fire();
+    if (newBulletsArray.length === 1) {
+      newBulletsArray[0].setDirection();
+    } else {
+      newBulletsArray = splitShot(newBulletsArray);
+    }
 
-
-    // for (var i = 0; i < newBulletsArray.length; i++) {
-    //   bulletArray.push(newBulletsArray[i]);
-    // }
+    for (var i = 0; i < newBulletsArray.length; i++) {
+      bulletArray.push(newBulletsArray[i]);
+    }
     if (bulletArray.length>80) {
       bulletArray.splice(0, 1);
     }
-    bulletArray.push(newBullet);
   }
 }
 
