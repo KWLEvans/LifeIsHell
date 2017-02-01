@@ -4,7 +4,7 @@ var ballArray = [];
 var bulletArray = [];
 var playerArray = [];
 var itemArray = [];
-var availablePickUpsArray = ["health", "bigShot"];
+var availablePickUpsArray = ["health", "bigShot", "splitShot"];
 var points = 0;
 var roomNumber = 0;
 var leftPressed = false;
@@ -16,7 +16,11 @@ var sPressed = false;
 var dPressed = false;
 var wPressed = false;
 
+var medicineImg = new Image();
+medicineImg.src = "img/medicine.png";
 
+var bigShotImg = new Image();
+bigShotImg.src = "img/bigshot.jpg";
 
 var Door = {
   xPos:600,
@@ -77,7 +81,7 @@ function Player() {
   this.height = 30,
   this.totalHealth = 600,
   this.currentHealth = this.totalHealth,
-  this.upgrades = [];
+  this.upgrades = ["splitShot"];
 }
 
 Player.prototype.draw = function(canvasContext){
@@ -221,6 +225,79 @@ Bullet.prototype.fire = function() {
   wPressed = false;
 }
 
+// function splitShot(splitBullets) {
+//   var bulletTrajectories;
+//   if (dPressed) {
+//     bulletTrajectories = multiShotCases(10, "x", splitBullets);
+//   } else if (aPressed) {
+//     bulletTrajectories = multiShotCases(-10, "x", splitBullets);
+//   }
+//   if (wPressed) {
+//     bulletTrajectories = multiShotCases(-10, "y", splitBullets);
+//   } else if (sPressed) {
+//     bulletTrajectories = multiShotCases(10, "y", splitBullets);
+//   }
+//   aPressed = false;
+//   sPressed = false;
+//   dPressed = false;
+//   wPressed = false;
+//   return bulletTrajectories;
+// }
+//
+// function multiShotCases(origin, direction, splitBullets) {
+//   var direction1;
+//   var direction2;
+//   if (direction === "x") {
+//     direction1 === "dx";
+//     direction2 === "dy";
+//   } else {
+//     //direction === y
+//     direction1 === "dy";
+//     direction2 === "dx";
+//   }
+//
+//   if (splitBullets.length >= 2) {
+//     //Right down
+//     splitBullets[0][direction1] = origin;
+//     splitBullets[0][direction2] = origin;
+//     //Right up
+//     splitBullets[1][direction1] = origin;
+//     splitBullets[1][direction2] = -origin;
+//   }
+//   if (splitBullets.length === 3) {
+//     //Right
+//     splitBullets[2][direction1] = origin;
+//     splitBullets[2][direction2] = origin - 10;
+//   }
+//   if (splitBullets.length >= 4) {
+//     //Left down
+//     splitBullets[2][direction1] = -origin;
+//     splitBullets[2][direction2] = origin;
+//     //Left up
+//     splitBullets[3][direction1] = -origin;
+//     splitBullets[3][direction2] = -origin;
+//   }
+//   if (splitBullets.length >= 5) {
+//     //Right
+//     splitBullets[4][direction1] = origin;
+//   }
+//   if (splitBullets.length >= 6) {
+//     //Left
+//     splitBullets[5][direction1] = -origin;
+//   }
+//   if (splitBullets.length >= 7) {
+//     //Down
+//     splitBullets[6][direction1] = origin -10;
+//     splitBullets[6][direction2] = origin;
+//   }
+//   if (splitBullets.length === 8) {
+//     //Up
+//     splitBullets[7][direction1] = origin -10;
+//     splitBullets[7][direction2] = -origin;
+//   }
+//   return splitBullets;
+// }
+
 Bullet.prototype.draw = function(canvasContext) {
   canvasContext.beginPath();
   canvasContext.rect(this.xPos, this.yPos, this.width, this.height);
@@ -232,24 +309,24 @@ Bullet.prototype.draw = function(canvasContext) {
 function Item(xPos, yPos, type) {
   this.xPos = xPos;
   this.yPos = yPos;
-  this.width = 20;
-  this.height = 20;
+  this.width = 30;
+  this.height = 30;
   this.dx = 0;
   this.dy = 0;
+  this.img = ""
   this.type = type;
 }
 
 Item.prototype.draw = function(canvasContext) {
   var color;
   if (this.type === "health") {
-    color = "lightgreen";
-  } else if (this.type === "bigShot") {
-    color = "goldenrod";
+    itemImg = medicineImg;
+  } else {
+    itemImg = bigShotImg;
   }
   canvasContext.beginPath();
   canvasContext.rect(this.xPos, this.yPos, this.width, this.height);
-  canvasContext.fillStyle = color;
-  canvasContext.fill();
+  canvasContext.drawImage(itemImg, this.xPos, this.yPos, this.width, this.height);
   canvasContext.closePath();
 }
 
@@ -311,16 +388,36 @@ function createBall(numberOfBalls) {
 
 function createBullet(player) {
   if (aPressed || dPressed || sPressed || wPressed) {
+    // var newBulletsArray = [];
+    // if (player.upgrades.includes("splitShot")) {
+    //   var splitShotCount = 0;
+    //   for (var i = 0; i < player.upgrades.length; i++) {
+    //     if(player.upgrades[i] === "splitShot" && splitShotCount < 8) {
+    //       splitShotCount++;
+    //       for (var i = 0; i < splitShotCount; i++) {
+    //         var newBullet = new Bullet(player);
+    //         newBulletsArray.push(newBullet);
+    //       }
+    //     }
+    //   }
+    //   newBulletsArray = splitShot(newBulletsArray);
+    // }
     var newBullet = new Bullet(player);
     if (player.upgrades.includes("bigShot")) {
       for (var i = 0; i < player.upgrades.length; i++) {
         if (player.upgrades[i] === "bigShot") {
-        newBullet.width += 1;
-        newBullet.height += 1;
+        newBullet.width += 2;
+        newBullet.height += 2;
         }
       }
     }
+
     newBullet.fire();
+
+
+    // for (var i = 0; i < newBulletsArray.length; i++) {
+    //   bulletArray.push(newBulletsArray[i]);
+    // }
     if (bulletArray.length>80) {
       bulletArray.splice(0, 1);
     }
@@ -349,9 +446,13 @@ function createItem() {
 }
 
 function displayHealth(currentHealth, health){
-  $("#health").css("width", health * (currentHealth/health) )
-  if( currentHealth < (health * 0.2) ){
+  if (currentHealth > health * 0.2) {
+    $("#health-danger").hide();
+    $("#health").show();
+    $("#health").css("width", health * (currentHealth/health))
+  } else if( currentHealth < (health * 0.2) ){
     $("#health").hide();
+    $("#health-danger").show();
     $("#health-danger").css("width", health * (currentHealth/health) )
   }
 }
@@ -404,28 +505,38 @@ $(function(){
   $('html').keypress(function(e) {
     if (e.keyCode === 32) {
       $('.introduction').hide();
-      $('.game').show();
+      $('.game').fadeIn();
     }
     if (e.keyCode === 114) {
         location.reload();
     }
   });
 
+
   var canvas = document.getElementById("canvas");
   var ctx = canvas.getContext("2d");
 
-  // var floorImg = new Image();
-  // floorImg.src = "img/floor.png";
-  // floorImg.onload = function(){
-  //   // create pattern
-  //    var ptrn = ctx.createPattern(floorImg, 'repeat'); // Create a pattern with this image, and set it to "repeat".
-  //    ctx.fillStyle = ptrn;
-  //    ctx.fillRect(0, 0, canvas.width, canvas.height); // context.fillRect(x, y, width, height);
-  // }
-  //
+  var bgReady =false;
+  var bgImg = new Image();
+  bgImg.onload = function() {
+     bgReady = true;
+  };
+  bgImg.src = "img/floor.png";
+
+
+
+  var displayBgImg = function(){
+  if(bgReady){
+    ctx.fillStyle = ctx.createPattern(bgImg, "repeat");
+    ctx.fillRect(0, 0, 600, 600);
+ }
+}
+
+
 
   var player1 = new Player();
   playerArray.push(player1);
+
 
 //player controller
 
@@ -528,11 +639,9 @@ $(function(){
 ///////////////// Call all programs
   Room.generate(player1);
 
-
-
-
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    displayBgImg();
     player1.draw(ctx);
     Door.draw(ctx);
     OutDoor.draw(ctx);
@@ -543,15 +652,17 @@ $(function(){
     doorCollision(player1);
     if (collisionDetectionLoop(playerArray,ballArray)) {
       player1.currentHealth -= 2;
+      if (player1.currentHealth < 0) {
+        $('.game').hide();
+        $('#score').text(points);
+        $('.gameOver').fadeIn();
+      }
     }
     displayHealth(player1.currentHealth, player1.totalHealth);
     createBullet(player1);
     moveBullets();
     moveBalls();
     player1.move();
-
-
-
 
   }
   setInterval(draw, 10);
