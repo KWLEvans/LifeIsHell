@@ -89,26 +89,26 @@ var Room = {
     createItem();
     if (roomNumber > 2) {
       playerImg.src = "img/child.gif"
-      ballImg.src = "img/angrymom.png"
-      bulletImg.src = "img/childdrawing.png"
-      wallImg.src = "img/school.gif"
-      bgImg.src = 'img/dirt.jpg'
+      ballImg.src = "img/bully.png"
+      bulletImg.src = "img/pizza.png"
+      wallImg.src = "img/table.jpg"
+      bgImg.src = 'img/cafeteriafloor.jpg'
       player.moveSpeed = 2
     }
     if (roomNumber > 4) {
       playerImg.src = "img/teenager.png"
-      ballImg.src = "img/book.png"
-      bulletImg.src = "img/lighter.png"
+      ballImg.src = "img/puberty.jpg"
+      bulletImg.src = "img/playboy.jpg"
       wallImg.src = "img/tv.png"
-      bgImg.src = 'img/grass.jpg'
+      bgImg.src = 'img/bathroom.jpg'
       player.moveSpeed = 5
     }
     if (roomNumber > 6) {
       playerImg.src = "img/adult.gif"
       ballImg.src = "img/bill.png"
       bulletImg.src = "img/coffee.png"
-      wallImg.src = "img/office.png"
-      bgImg.src = 'img/asphalt.jpg'
+      wallImg.src = "img/taxform.png"
+      bgImg.src = 'img/marble.jpg'
       player.moveSpeed = 4
     }
     if (roomNumber > 8) {
