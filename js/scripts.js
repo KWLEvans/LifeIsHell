@@ -16,11 +16,27 @@ var sPressed = false;
 var dPressed = false;
 var wPressed = false;
 
+
+var bgImg = new Image();
+bgImg.src = "img/carpet.jpg";
+
 var medicineImg = new Image();
 medicineImg.src = "img/medicine.png";
 
 var bigShotImg = new Image();
-bigShotImg.src = "img/bigshot.jpg";
+bigShotImg.src = "img/bigshot.png";
+
+var playerImg = new Image();
+playerImg.src = "img/baby.jpg"
+
+var ballImg = new Image();
+ballImg.src = "img/antifreeze.png"
+
+var bulletImg = new Image();
+bulletImg.src = "img/pacifier.png"
+
+var wallImg = new Image();
+wallImg.src = "img/crib.jpg"
 
 var Door = {
   xPos:600,
@@ -66,11 +82,48 @@ var Room = {
     roomNumber += 1;
     $('#points').text(points);
     wallArray = [];
-    createBall(1);
+    createBall(roomNumber/2);
     createWalls(3);
     createDoor();
     createOutDoor(player);
     createItem();
+    if (roomNumber > 2) {
+      playerImg.src = "img/child.gif"
+      ballImg.src = "img/angrymom.png"
+      bulletImg.src = "img/childdrawing.png"
+      wallImg.src = "img/school.gif"
+      bgImg.src = 'img/dirt.jpg'
+      player.moveSpeed = 2
+    }
+    if (roomNumber > 4) {
+      playerImg.src = "img/teenager.png"
+      ballImg.src = "img/book.png"
+      bulletImg.src = "img/lighter.png"
+      wallImg.src = "img/tv.png"
+      bgImg.src = 'img/grass.jpg'
+      player.moveSpeed = 5
+    }
+    if (roomNumber > 6) {
+      playerImg.src = "img/adult.gif"
+      ballImg.src = "img/bill.png"
+      bulletImg.src = "img/coffee.png"
+      wallImg.src = "img/office.png"
+      bgImg.src = 'img/asphalt.jpg'
+      player.moveSpeed = 4
+    }
+    if (roomNumber > 8) {
+      playerImg.src = "img/grandpa.png"
+      ballImg.src = "img/grave.png"
+      bulletImg.src = "img/candy.png"
+      wallImg.src = "img/hospitalbed.png"
+      bgImg.src = 'img/vinyl.jpg'
+      player.moveSpeed = 1
+    }
+    if (roomNumber > 10) {
+      $('.game').hide();
+      $('#score').text(points);
+      $('.gameOver').fadeIn();
+    }
   }
 }
 
@@ -79,6 +132,7 @@ function Player() {
   this.yPos = 10,
   this.width = 30,
   this.height = 30,
+  this.moveSpeed = 1,
   this.totalHealth = 600,
   this.currentHealth = this.totalHealth,
   this.upgrades = [];
@@ -87,59 +141,58 @@ function Player() {
 Player.prototype.draw = function(canvasContext){
   canvasContext.beginPath();
   canvasContext.rect(this.xPos, this.yPos, this.height, this.width );
-  canvasContext.fillStyle = "red";
-  canvasContext.fill();
+  canvasContext.drawImage(playerImg, this.xPos, this.yPos, this.width, this.height);
   canvasContext.closePath();
 }
 
 Player.prototype.move = function() {
   if(downPressed && rightPressed) {
-    this.yPos += 5;
-    this.xPos += 5;
+    this.yPos += this.moveSpeed;
+    this.xPos += this.moveSpeed;
     if (collisionDetectionLoop(playerArray,wallArray)) {
-      this.yPos -= 5;
-      this.xPos -= 5;
+      this.yPos -= this.moveSpeed;
+      this.xPos -= this.moveSpeed;
     }
   } else if(downPressed && leftPressed) {
-      this.yPos += 5;
-      this.xPos -= 5;
+      this.yPos += this.moveSpeed;
+      this.xPos -= this.moveSpeed;
     if (collisionDetectionLoop(playerArray,wallArray)) {
-      this.yPos -= 5;
-      this.xPos += 5;
+      this.yPos -= this.moveSpeed;
+      this.xPos += this.moveSpeed;
     }
   } else if(upPressed && rightPressed) {
-      this.yPos -= 5;
-      this.xPos += 5;
+      this.yPos -= this.moveSpeed;
+      this.xPos += this.moveSpeed;
     if (collisionDetectionLoop(playerArray,wallArray)) {
-      this.yPos += 5;
-      this.xPos -= 5;
+      this.yPos += this.moveSpeed;
+      this.xPos -= this.moveSpeed;
     }
   } else if(upPressed && leftPressed) {
-      this.yPos -= 5;
-      this.xPos -= 5;
+      this.yPos -= this.moveSpeed;
+      this.xPos -= this.moveSpeed;
     if (collisionDetectionLoop(playerArray,wallArray)) {
-      this.yPos += 5;
-      this.xPos += 5;
+      this.yPos += this.moveSpeed;
+      this.xPos += this.moveSpeed;
     }
   } else if(rightPressed) {
-    this.xPos += 5;
+    this.xPos += this.moveSpeed;
     if (collisionDetectionLoop(playerArray,wallArray)) {
-      this.xPos -= 5;
+      this.xPos -= this.moveSpeed;
     }
   } else if(leftPressed) {
-    this.xPos -= 5;
+    this.xPos -= this.moveSpeed;
     if (collisionDetectionLoop(playerArray,wallArray)) {
-      this.xPos += 5;
+      this.xPos += this.moveSpeed;
     }
   } else if(upPressed) {
-    this.yPos -= 5;
+    this.yPos -= this.moveSpeed;
     if (collisionDetectionLoop(playerArray,wallArray)) {
-      this.yPos += 5;
+      this.yPos += this.moveSpeed;
     }
   } else if(downPressed) {
-    this.yPos += 5;
+    this.yPos += this.moveSpeed;
     if (collisionDetectionLoop(playerArray,wallArray)) {
-      this.yPos -= 5;
+      this.yPos -= this.moveSpeed;
     }
   }
   for (var i = 0; i < itemArray.length; i++) {
@@ -176,8 +229,7 @@ function Wall(xPos,yPos, width, height) {
 Wall.prototype.draw = function(canvasContext) {
   canvasContext.beginPath();
   canvasContext.rect(this.xPos, this.yPos, this.width, this.height);
-  canvasContext.fillStroke = "black";
-  canvasContext.stroke();
+  canvasContext.drawImage(wallImg, this.xPos, this.yPos, this.width, this.height);
   canvasContext.closePath();
 };
 
@@ -194,8 +246,7 @@ function Ball(xPos,yPos,width,height, dx, dy) {
 Ball.prototype.draw = function(canvasContext) {
   canvasContext.beginPath();
   canvasContext.rect(this.xPos, this.yPos, this.width, this.height);
-  canvasContext.fillStyle = "#0095DD";
-  canvasContext.fill();
+  canvasContext.drawImage(ballImg, this.xPos, this.yPos, this.width, this.height);
   canvasContext.closePath();
 }
 
@@ -228,16 +279,15 @@ Bullet.prototype.fire = function() {
 Bullet.prototype.draw = function(canvasContext) {
   canvasContext.beginPath();
   canvasContext.rect(this.xPos, this.yPos, this.width, this.height);
-  canvasContext.fillStyle = "black";
-  canvasContext.fill();
+  canvasContext.drawImage(bulletImg, this.xPos, this.yPos, this.width, this.height);
   canvasContext.closePath();
 }
 
 function Item(xPos, yPos, type) {
   this.xPos = xPos;
   this.yPos = yPos;
-  this.width = 20;
-  this.height = 20;
+  this.width = 30;
+  this.height = 30;
   this.dx = 0;
   this.dy = 0;
   this.img = ""
@@ -330,8 +380,8 @@ function createBullet(player) {
 
 function createWalls(numberOfWalls) {
   for (var i = 1; i<=numberOfWalls; i++) {
-    var randomWidth = randomNumberGrid(1,10);
-    var randomHeight = randomNumberGrid(1,10);
+    var randomWidth = randomNumberGrid(4,10);
+    var randomHeight = randomNumberGrid(4,10);
     var randomXPosition = randomNumberGrid(2,28 - (randomWidth/20));
     var randomYPosition = randomNumberGrid(2,28 - (randomHeight/20));
     wallArray.push(new Wall(randomXPosition, randomYPosition, randomWidth, randomHeight));
@@ -415,21 +465,14 @@ $(function(){
   var canvas = document.getElementById("canvas");
   var ctx = canvas.getContext("2d");
 
-  var bgReady =false;
-  var bgImg = new Image();
-  bgImg.onload = function() {
-     bgReady = true;
-  };
-  bgImg.src = "img/floor.png";
+
 
 
 
   var displayBgImg = function(){
-  if(bgReady){
     ctx.fillStyle = ctx.createPattern(bgImg, "repeat");
     ctx.fillRect(0, 0, 600, 600);
- }
-}
+  }
 
 
 
