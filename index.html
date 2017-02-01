@@ -10,11 +10,14 @@
   <body>
 
 
+
     <div class="introduction">
-      <h2>arrows to move</h2>
-      <h2>WASD to shoot</h2>
-      <h2>space to start</h2>
-      <h2>r to restart</h2>
+      <div id='openinglayout'>
+        <h2><span class="color">Arrows</span> to Move  </h2>
+        <h2><span class="color">WASD</span> to Shoot  </h2>
+        <h2><span class="color">Space</span> to Start  </h2>
+        <h2><span class="color">R</span> to Restart  </h2>
+      </div>
       <h1>LIFE IS HELL</h1>
     </div>
 
@@ -36,10 +39,11 @@
     </div>
       <div class="gameOver">
         <h1>GAME OVER</h1>
-        <h2 class="yourscore">your score: <span id = "score"></span></h2>
-        <h2 class="topscores">*   top scores  *</h2>
-        <ul class="scores">
-        </ul>
+        <div id="scorelayout">
+          <h2 class="yourscore">Your Score: <span id = "score"></span></h2>
+          <h2 class="topscores">*   Top Scores  *</h2>
+          <ul class="scores"></ul>
+        </div>
       </div>
   </body>
 </html>
