@@ -20,6 +20,10 @@ body {
   box-shadow: 2px 2px 2px 1px rgba(3, 50, 3, 0.8);
 }
 
+h2 {
+  display: inline;
+}
+
 
 .game {
   display: none;

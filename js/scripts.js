@@ -15,6 +15,7 @@ var aPressed = false;
 var sPressed = false;
 var dPressed = false;
 var wPressed = false;
+var gameReset = true;
 
 var bgImg = new Image();
 bgImg.src = "img/carpet.jpg";
@@ -80,7 +81,8 @@ var Room = {
   generate: function(player) {
     points += 1;
     roomNumber += 1;
-    $('#points').text(points);
+    $('#points').text("Points: " + points);
+    $('#age').text("Age: 0")
     bulletArray = [];
     wallArray = [];
     createBall(roomNumber/2);
@@ -95,6 +97,7 @@ var Room = {
       wallImg.src = "img/school.gif"
       bgImg.src = 'img/dirt.jpg'
       player.moveSpeed = 2
+      $("#age").text("Age: 6")
     }
     if (roomNumber > 4) {
       playerImg.src = "img/teenager.png"
@@ -103,6 +106,7 @@ var Room = {
       wallImg.src = "img/tv.png"
       bgImg.src = 'img/grass.jpg'
       player.moveSpeed = 5
+      $("#age").text("Age: 17")
     }
     if (roomNumber > 6) {
       playerImg.src = "img/adult.gif"
@@ -111,6 +115,7 @@ var Room = {
       wallImg.src = "img/office.png"
       bgImg.src = 'img/asphalt.jpg'
       player.moveSpeed = 4
+      $("#age").text("Age: 42")
     }
     if (roomNumber > 8) {
       playerImg.src = "img/grandpa.png"
@@ -119,9 +124,12 @@ var Room = {
       wallImg.src = "img/hospitalbed.png"
       bgImg.src = 'img/vinyl.jpg'
       player.moveSpeed = 1
+      $("#age").text("Age: 81")
     }
     if (roomNumber > 10) {
+      gameReset = false;
       $('.game').hide();
+      $('#hardware').hide();
       $('#score').text(points);
       $('.gameOver').fadeIn();
     }
@@ -571,12 +579,15 @@ function doorCollision(player) {
 ////////////////DOCUMENT READY
 $(function(){
   $('html').keypress(function(e) {
-    if (e.keyCode === 32) {
+    if (e.keyCode === 32 && gameReset === true) {
+      //Game Start
       $('.introduction').hide();
       $('#hardware').show();
       $('.game').fadeIn();
     }
     if (e.keyCode === 114) {
+        //Reload
+        gameReset = true;
         location.reload();
     }
   });
@@ -722,9 +733,12 @@ $(function(){
     if (collisionDetectionLoop(playerArray,ballArray)) {
       player1.currentHealth -= 2;
       if (player1.currentHealth < 0) {
+        gameReset = false;
         $('.game').hide();
+        $('#hardware').hide();
         $('#score').text(points);
         $('.gameOver').fadeIn();
+
       }
     }
     displayHealth(player1.currentHealth, player1.totalHealth);
