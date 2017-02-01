@@ -4,7 +4,7 @@ var ballArray = [];
 var bulletArray = [];
 var playerArray = [];
 var itemArray = [];
-var availablePickUpsArray = ["health", "bigShot", "splitShot"];
+var availablePickUpsArray = ["health", "bigShot", "splitShot", "ricochet"];
 var points = 0;
 var roomNumber = 0;
 var leftPressed = false;
@@ -92,19 +92,19 @@ var Room = {
     createItem();
     if (roomNumber > 2) {
       playerImg.src = "img/child.gif"
-      ballImg.src = "img/angrymom.png"
-      bulletImg.src = "img/childdrawing.png"
-      wallImg.src = "img/school.gif"
-      bgImg.src = 'img/dirt.jpg'
+      ballImg.src = "img/bully.png"
+      bulletImg.src = "img/pizza.png"
+      wallImg.src = "img/table.jpg"
+      bgImg.src = 'img/cafeteriafloor.jpg'
       player.moveSpeed = 2
       $("#age").text("Age: 6")
     }
     if (roomNumber > 4) {
       playerImg.src = "img/teenager.png"
-      ballImg.src = "img/book.png"
-      bulletImg.src = "img/lighter.png"
+      ballImg.src = "img/puberty.jpg"
+      bulletImg.src = "img/playboy.jpg"
       wallImg.src = "img/tv.png"
-      bgImg.src = 'img/grass.jpg'
+      bgImg.src = 'img/bathroom.jpg'
       player.moveSpeed = 5
       $("#age").text("Age: 17")
     }
@@ -112,8 +112,8 @@ var Room = {
       playerImg.src = "img/adult.gif"
       ballImg.src = "img/bill.png"
       bulletImg.src = "img/coffee.png"
-      wallImg.src = "img/office.png"
-      bgImg.src = 'img/asphalt.jpg'
+      wallImg.src = "img/taxform.png"
+      bgImg.src = 'img/marble.jpg'
       player.moveSpeed = 4
       $("#age").text("Age: 42")
     }
@@ -145,8 +145,8 @@ function Player() {
   this.totalHealth = 600,
   this.currentHealth = this.totalHealth,
   this.upgrades = [];
-  this.bulletSizeModifier = 5;
-  this.bulletSplits = 1;
+  this.bulletSizeModifier = 15;
+  this.bulletSplits = 4;
 }
 
 Player.prototype.draw = function(canvasContext){
@@ -283,7 +283,7 @@ function Bullet(player) {
   this.height = 5,
   this.dx = 0,
   this.dy = 0,
-  this.ricochet = false,
+  this.ricochet = true,
   this.timesBounced = 0
 }
 
@@ -504,7 +504,7 @@ function createWalls(numberOfWalls) {
 };
 
 function createItem() {
-  var spawnChance = randomNumber(1, 10);
+  var spawnChance = 1
   if (spawnChance > 6) {
     var randomXPosition = randomNumberGrid(1,29);
     var randomYPosition = randomNumberGrid(1,29);
