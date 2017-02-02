@@ -5,7 +5,7 @@ body {
 #hardware {
   height: auto;
   display: none;
-  position: absolute;
+  position: fixed;
   top: 10%;
   left: 20%;
   margin: 0 auto;
