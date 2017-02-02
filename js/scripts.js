@@ -109,8 +109,8 @@ var Room = {
     $('#age').text("Age: 0")
     bulletArray = [];
     wallArray = [];
-    createBall(roomNumber/2);
     createWalls(3);
+    createBall(roomNumber/2);
     createOutDoor(player);
     createDoor();
     createItem();
@@ -238,6 +238,8 @@ Player.prototype.move = function() {
     if (collisionDetection(itemArray[i], this).match(/^[^canvas]+/gi)) {
       var pickUp = itemArray.splice(i, 1);
       this.pickUp(pickUp[0]);
+      points += 3;
+      $('#points').text("Points: " + points);
     }
   }
 }
@@ -491,36 +493,47 @@ function createDoor() {
 }
 
 function createOutDoor(player) {
-  if (player.xPos + player.width + player.moveSpeed > 595) {
+  if (player.xPos + player.width + player.moveSpeed > 585) {
     player.xPos = 6;
     OutDoor.xPos = -44;
     OutDoor.yPos = player.yPos;
-  } else if (player.xPos + player.moveSpeed < 7) {
+  } else if (player.xPos + player.moveSpeed < 15) {
     player.xPos = 600 - player.moveSpeed - player.width;
     OutDoor.xPos = 594;
     OutDoor.yPos = player.yPos;
-  } else if (player.yPos + player.height + player.moveSpeed > 595) {
+  } else if (player.yPos + player.height + player.moveSpeed > 585) {
     player.yPos = 6;
     OutDoor.yPos = -44;
     OutDoor.xPos = player.xPos;
-  } else if (player.yPos + player.moveSpeed < 7) {
+  } else if (player.yPos + player.moveSpeed < 15) {
     player.yPos = 600 - player.moveSpeed - player.height;
     OutDoor.yPos = 594;
     OutDoor.xPos = player.xPos;
   }
 }
 
+
 function createBall(numberOfBalls) {
   for (var i = 1; i<=numberOfBalls; i++) {
+    var remade = false;
     var dx = randomPositiveOrNegative(2);
     var dy = randomPositiveOrNegative(2);
     var randomBallX = randomNumberGrid(0, 29);
     var randomBallY = randomNumberGrid(0, 29);
     var newBall = new Ball(randomBallX, randomBallY, 20, 20, dx, dy);
-    if (randomNumber(1,5) === 5) {
-      newBall.chaser = true;
+
+    if (creationCollision(newBall)) {
+      i--;
+    } else {
+      if (randomNumber(1,5) === 5) {
+        newBall.chaser = true;
+      }
+      if (randomNumber(1,10) === 10) {
+        newBall.height = 40;
+        newBall.width = 40;
+      }
+      ballArray.push(newBall);
     }
-    ballArray.push(newBall);
   }
 }
 
@@ -559,35 +572,36 @@ function createWalls(numberOfWalls) {
     var randomHeight = randomNumberGrid(4,10);
     var randomXPosition = randomNumberGrid(2,28 - (randomWidth/20));
     var randomYPosition = randomNumberGrid(2,28 - (randomHeight/20));
-    wallArray.push(new Wall(randomXPosition, randomYPosition, randomWidth, randomHeight));
+    var newWall = new Wall(randomXPosition, randomYPosition, randomWidth, randomHeight);
+    if (creationCollision(newWall)) {
+      i--;
+    } else {
+      wallArray.push(newWall);
+    }
   };
 };
 
 function createItem() {
   var spawnChance = randomNumber(1,10);
-  if (spawnChance > 3) {
-    var randomXPosition = randomNumberGrid(2,28);
-    var randomYPosition = randomNumberGrid(2,28);
-    var randomItem = availablePickUpsArray[randomNumber(0, availablePickUpsArray.length - 1)];
-    console.log("Item1 picked up")
-    console.log(randomItem);
-    itemArray.push(new Item(randomXPosition, randomYPosition, randomItem));
-  }
-  if (spawnChance > 8) {
-    var randomXPosition = randomNumberGrid(2,28);
-    var randomYPosition = randomNumberGrid(2,28);
-    var randomItem = availablePickUpsArray[randomNumber(0, availablePickUpsArray.length - 1)];
-    console.log("Item2 picked up")
-    console.log(randomItem);
-    itemArray.push(new Item(randomXPosition, randomYPosition, randomItem));
-  }
+  var numberOfItems = 0;
   if (spawnChance === 10) {
+    numberOfItems = 3;
+  } else if (spawnChance >= 8) {
+    numberOfItems = 2;
+  } else if (spawnChance > 3) {
+    numberOfItems = 1;
+  }
+
+  for (var i = 0; i < numberOfItems; i++) {
     var randomXPosition = randomNumberGrid(2,28);
     var randomYPosition = randomNumberGrid(2,28);
     var randomItem = availablePickUpsArray[randomNumber(0, availablePickUpsArray.length - 1)];
-    itemArray.push(new Item(randomXPosition, randomYPosition, randomItem));
-    console.log("Item3 picked up")
-    console.log(randomItem);
+    var newItem = new Item(randomXPosition, randomYPosition, randomItem);
+    if (creationCollision(newItem)) {
+      i--;
+    } else {
+      itemArray.push(newItem);
+    }
   }
 }
 
@@ -605,36 +619,6 @@ function displayHealth(currentHealth, health){
 
 //Collision
 
-function collisionDetectionLoop(object1Array,object2Array) {
-  for (var i=0;i<object1Array.length;i++) {
-    for (var j=0;j<object2Array.length;j++) {
-      if (collisionDetection(object1Array[i],object2Array[j])) {
-        return collisionDetection(object1Array[i],object2Array[j]);
-      }
-    }
-  }
-}
-
-
-// function collisionDetection(collider, object) {
-//   var collisionType = "";
-//   if ((collider.xPos <= 0 || collider.xPos + collider.width >= 600) || (collider.xPos + collider.width > object.xPos && collider.xPos < object.xPos + object.width)) {
-//     if (collider.yPos + collider.height > object.yPos + 5 && collider.yPos < object.yPos + object.height - 5) {
-//       collisionType += 'x';
-//     } else if (collider.xPos < 0 || collider.xPos + collider.width > 600) {
-//       collisionType += 'canvasx';
-//     }
-//   }
-//
-//   if ((collider.yPos < 0 || collider.yPos + collider.height > 600) || (collider.yPos + collider.height > object.yPos && collider.yPos < object.yPos + object.height)) {
-//     if (collider.xPos + collider.width > object.xPos + 5 && collider.xPos < object.xPos + object.width - 5) {
-//       collisionType += 'y';
-//     } else if (collider.yPos < 0 || collider.yPos + collider.height > 600) {
-//       collisionType += 'canvasy';
-//     }
-//   }
-//   return collisionType;
-// }
 
 function collisionDetection(collider, object) {
   if (collider.xPos + collider.dx <= 0 || collider.xPos + collider.width + collider.dx >= 600) {
@@ -672,6 +656,15 @@ function collisionDetection(collider, object) {
   }
 }
 
+function collisionDetectionLoop(object1Array,object2Array) {
+  for (var i=0;i<object1Array.length;i++) {
+    for (var j=0;j<object2Array.length;j++) {
+      if (collisionDetection(object1Array[i],object2Array[j])) {
+        return collisionDetection(object1Array[i],object2Array[j]);
+      }
+    }
+  }
+}
 
 function doorCollision(player) {
   if ((player.xPos + player.width > Door.xPos + Door.dx && player.xPos < Door.xPos + Door.width + Door.dx) && (player.yPos + player.height > Door.yPos + Door.dy && player.yPos < Door.yPos + Door.height + Door.dy)) {
@@ -679,6 +672,13 @@ function doorCollision(player) {
   }
 }
 
+function creationCollision(createdObject) {
+  for (var j = 0; j < wallArray.length; j++) {
+    if (collisionDetection(createdObject, wallArray[j]).match(/^[^canvas]+/i)) {
+      return true;
+    }
+  }
+}
 
 
 
@@ -710,15 +710,12 @@ $(function(){
   //GET Difficulties
   $("#easy").click(function(){
     difficulties = "easy";
-    console.log("easy selected")
   });
   $("#normal").click(function(){
     difficulties = "normal"
-    console.log("normal selected")
   });
   $("#hard").click(function(){
     difficulties = "hard"
-    console.log("hard selected")
   });
 
   var player1 = new Player();
@@ -800,13 +797,13 @@ $(function(){
       ballArray[i].xPos += ballArray[i].dx;
       ballArray[i].yPos += ballArray[i].dy;
       for (var j=0; j<wallArray.length; j++){
-        if(collisionDetection(ballArray[i],wallArray[j])==='x' || collisionDetection(ballArray[i],wallArray[j])==='canvasx') {
+        if(collisionDetection(ballArray[i],wallArray[j]).match(/x+/i)) {
           ballArray[i].dx = -ballArray[i].dx;
-        };
+        }
 
-        if(collisionDetection(ballArray[i],wallArray[j])==='y' || collisionDetection(ballArray[i],wallArray[j])==='canvasy'){
+        if(collisionDetection(ballArray[i],wallArray[j]).match(/y+/i)){
           ballArray[i].dy = -ballArray[i].dy;
-        };
+        }
       }
     }
   }
@@ -817,7 +814,6 @@ $(function(){
       bulletArray[i].yPos += bulletArray[i].dy;
       for(var j=0; j<ballArray.length; j++) {
         if(collisionDetection(bulletArray[i],ballArray[j]).match(/^[^canvas]+/i)) {
-          console.log(collisionDetection(bulletArray[i],ballArray[j]));
           points += 5;
           $('#points').text("Points: " + points);
           ballArray.splice(j, 1);
@@ -828,12 +824,12 @@ $(function(){
           if(collisionDetection(bulletArray[i],wallArray[k]).match(/x+/i)) {
             bulletArray[i].dx = -bulletArray[i].dx;
             bulletArray[i].timesBounced++;
-          };
+          }
 
           if(collisionDetection(bulletArray[i],wallArray[k]).match(/y+/i)){
             bulletArray[i].dy = -bulletArray[i].dy;
             bulletArray[i].timesBounced++;
-          };
+          }
         }
       }
       if (bulletArray[i].timesBounced > 50) {
