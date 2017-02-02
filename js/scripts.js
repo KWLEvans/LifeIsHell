@@ -560,7 +560,6 @@ function createItem() {
     } else {
       itemToSpawn = "bigShot";
     }
-    console.log(itemToSpawn);
     var newItem = new Item(randomXPosition, randomYPosition, itemToSpawn);
     if (creationCollision(newItem)) {
       i--;
