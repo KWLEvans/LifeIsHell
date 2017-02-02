@@ -209,3 +209,145 @@ canvas {
   height: 20px;
   background-color: #3FFF33;
 }
+
+
+@media screen and (max-width: 768px){
+  #hardware {
+    height: auto;
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin: 0 auto;
+  }
+
+  #hardware img {
+    display: none;
+    width: 0;
+    height: auto;
+    border: 8px solid black;
+    border-radius: 10px;
+    box-shadow: 2px 2px 2px 1px rgba(3, 50, 3, 0.8);
+  }
+
+  .game {
+    display: none;
+    position: absolute;
+    top: 20px;
+    left: 50px;
+  }
+
+  #openinglayout {
+    position: absolute;
+    top: 3%;
+    left: auto;
+    font-size: 3rem;
+    font-weight: 500;
+  }
+
+  .introduction h1 {
+    position: absolute;
+    text-align: center;
+    margin-top: 20vh;
+    font-size: 10vh;
+    color: rgba(255, 255, 255, 1);
+  }
+
+  .introduction {
+    background-image: none;
+    background-color: black;
+    width: 100%;
+    heigth: 50%;
+  }
+
+  .introduction h2 {
+    text-align: center;
+    margin-left: 3vw;
+    padding-top: 4vh;
+    color: yellow;
+    letter-spacing: 0.2vw;
+  }
+
+  .introduction:hover {
+    background-image: url("../img/fire.jpg")
+  }
+
+  #difficulties {
+    display: block;
+    margin: 0 auto;
+  }
+
+  #easy{
+    font-weight: bold;
+    background-color: lightgrey;
+    color: black;
+    width: 25%;
+
+    margin-left: 3vw;
+    margin-top: 60vh;
+  }
+  #normal{
+    font-weight: bold;
+    background-color: lightgrey;
+    color: black;
+    width: 25%;
+    margin-top: 60vh;
+    margin-left: 7vw;
+  }
+
+  #hard{
+    font-weight: bold;
+    background-color: lightgrey;
+    color: black;
+    width: 25%;
+    margin-top: 60vh;
+    margin-left: 7vw;
+    margin-right: 3vh
+  }
+
+  .gameOver h1 {
+    position: absolute;
+    text-align: center;
+    margin-top: 5vh;
+    font-size: 15vh;
+    color: rgba(255, 255, 255, 1);
+  }
+
+  .gameOver h2 {
+    text-align: center;
+    color: white;
+    letter-spacing: 1vw;
+    text-decoration: underline;
+  }
+
+  .gameOver h2 .yourscore {
+    margin-top: 73vh;
+    font-size: 5vh;
+  }
+
+  .gameOver h2 .topscores {
+    margin-top: 78vh
+    font-size: 5vh;
+  }
+
+  .gameOver ul .scores{
+    list-style: none;
+    font-size: 5vh;
+    color: white;
+  }
+
+  .gameOver li .scores{
+    list-style: none;
+    font-size: 5vh;
+    color: white;
+  }
+
+  #scorelayout {
+    display: block;
+    margin-left: 0;
+  }
+
+
+
+
+}
