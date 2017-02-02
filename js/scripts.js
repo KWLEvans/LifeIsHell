@@ -37,7 +37,7 @@ var bulletImg = new Image();
 bulletImg.src = "img/pacifier.png";
 
 var wallImg = new Image();
-wallImg.src = "img/crib.jpg";
+wallImg.src = "img/bear.png";
 
 var ricochetImg = new Image();
 ricochetImg.src = "img/ricochet.png";
