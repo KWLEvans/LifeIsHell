@@ -112,47 +112,11 @@ var Room = {
     $('#age').text("Age: 0")
     bulletArray = [];
     wallArray = [];
-    createWalls(3);
+    createWalls((roomNumber*2)+2);
     createBall(roomNumber/2);
     createOutDoor(player);
     createDoor();
     createItem();
-    if (roomNumber > 2) {
-      playerImg.src = "img/child.gif";
-      ballImg.src = "img/bully.png";
-      bulletImg.src = "img/pizza.png";
-      wallImg.src = "img/table.jpg";
-      bgImg.src = 'img/cafeteriafloor.jpg';
-      player.moveSpeed = 2;
-      $("#age").text("Age: 6");
-    }
-    if (roomNumber > 4) {
-      playerImg.src = "img/teenager.png";
-      ballImg.src = "img/puberty.jpg";
-      bulletImg.src = "img/playboy.jpg";
-      wallImg.src = "img/tv.png";
-      bgImg.src = 'img/bathroom.jpg';
-      player.moveSpeed = 5;
-      $("#age").text("Age: 17");
-    }
-    if (roomNumber > 6) {
-      playerImg.src = "img/adult.gif";
-      ballImg.src = "img/bill.png";
-      bulletImg.src = "img/coffee.png";
-      wallImg.src = "img/taxform.png";
-      bgImg.src = 'img/marble.jpg';
-      player.moveSpeed = 4;
-      $("#age").text("Age: 42");
-    }
-    if (roomNumber > 8) {
-      playerImg.src = "img/grandpa.png";
-      ballImg.src = "img/grave.png";
-      bulletImg.src = "img/candy.png";
-      wallImg.src = "img/hospitalbed.png";
-      bgImg.src = 'img/vinyl.jpg';
-      player.moveSpeed = 1;
-      $("#age").text("Age: 81");
-    }
     if (roomNumber > 10) {
       gameReset = false;
       $('.game').hide();
@@ -470,49 +434,15 @@ Item.prototype.draw = function(canvasContext) {
 function createDoor() {
   var randomXOrY = randomNumber(0,2);
   var randomMinOrMax = randomNumber(0,2);
-  Door.dx = 0;
-  Door.dy = 0;
-  if (randomXOrY) {
-    if (randomMinOrMax) {
-      Door.xPos = -44;
-      Door.yPos = randomNumberGrid(1, 27);
-      Door.dx = 5;
-    } else {
-      Door.xPos = 594;
-      Door.yPos = randomNumberGrid(1, 27);
-      Door.dx = -5;
-    }
-  } else {
-    if (randomMinOrMax) {
-      Door.yPos = -44;
-      Door.xPos = randomNumberGrid(1, 27);
-      Door.dy = 5;
-    } else {
-      Door.yPos = 594;
-      Door.xPos = randomNumberGrid(1, 27);
-      Door.dy = -5;
-    }
-  }
+  Door.xPos = 594;
+  Door.yPos = randomNumberGrid(1, 27);
+  Door.dx = -5;
 }
 
 function createOutDoor(player) {
-  if (player.xPos + player.width + player.moveSpeed > 585) {
     player.xPos = 6;
     OutDoor.xPos = -44;
     OutDoor.yPos = player.yPos;
-  } else if (player.xPos + player.moveSpeed < 15) {
-    player.xPos = 600 - player.moveSpeed - player.width;
-    OutDoor.xPos = 594;
-    OutDoor.yPos = player.yPos;
-  } else if (player.yPos + player.height + player.moveSpeed > 585) {
-    player.yPos = 6;
-    OutDoor.yPos = -44;
-    OutDoor.xPos = player.xPos;
-  } else if (player.yPos + player.moveSpeed < 15) {
-    player.yPos = 600 - player.moveSpeed - player.height;
-    OutDoor.yPos = 594;
-    OutDoor.xPos = player.xPos;
-  }
 }
 
 
@@ -560,7 +490,7 @@ function createBullet(player) {
     for (var i = 0; i < newBulletsArray.length; i++) {
       bulletArray.push(newBulletsArray[i]);
     }
-    if (bulletArray.length>30) {
+    if (bulletArray.length>10) {
       bulletArray.splice(0, player.bulletSplits);
     }
     shootSound.play();
@@ -571,12 +501,16 @@ function createBullet(player) {
 
 function createWalls(numberOfWalls) {
   for (var i = 1; i<=numberOfWalls; i++) {
-    var randomWidth = randomNumberGrid(4,10);
-    var randomHeight = randomNumberGrid(4,10);
-    var randomXPosition = randomNumberGrid(2,28 - (randomWidth/20));
-    var randomYPosition = randomNumberGrid(2,28 - (randomHeight/20));
-    var newWall = new Wall(randomXPosition, randomYPosition, randomWidth, randomHeight);
+    // var randomWidth = randomNumberGrid(4,4);
+    // var randomHeight = randomNumberGrid(4,4);
+    var randomXPosition = randomNumber(1,13)*40;
+    var randomYPosition = randomNumber(1,13)*40;
+    var newWall = new Wall(randomXPosition, randomYPosition, 40, 40);
     if (creationCollision(newWall)) {
+      i--;
+    } else if (creationCollision(playerArray[0])) {
+      i--;
+    } else if (creationCollision(Door)) {
       i--;
     } else {
       wallArray.push(newWall);
@@ -691,6 +625,46 @@ function creationCollision(createdObject) {
   }
 }
 
+function checkTime(player1) {
+  console.log('made it')
+  if (time < 3000) {
+    playerImg.src = "img/grandpa.png";
+    ballImg.src = "img/grave.png";
+    bulletImg.src = "img/candy.png";
+    wallImg.src = "img/hospitalbed.png";
+    bgImg.src = 'img/vinyl.jpg';
+    player1.moveSpeed = 1;
+    $("#age").text("Age: 81");
+  } else if (time < 5000) {
+    playerImg.src = "img/adult.gif";
+    ballImg.src = "img/bill.png";
+    bulletImg.src = "img/coffee.png";
+    wallImg.src = "img/taxform.png";
+    bgImg.src = 'img/marble.jpg';
+    player1.moveSpeed = 4;
+    $("#age").text("Age: 42");
+
+  } else if (time < 7000) {
+    playerImg.src = "img/teenager.png";
+    ballImg.src = "img/puberty.jpg";
+    bulletImg.src = "img/playboy.jpg";
+    wallImg.src = "img/tv.png";
+    bgImg.src = 'img/bathroom.jpg';
+    player1.moveSpeed = 5;
+    $("#age").text("Age: 17");
+
+  } else if (time < 9000) {
+    playerImg.src = "img/child.gif";
+    ballImg.src = "img/bully.png";
+    bulletImg.src = "img/pizza.png";
+    wallImg.src = "img/table.jpg";
+    bgImg.src = 'img/cafeteriafloor.jpg';
+    player1.moveSpeed = 2;
+    $("#age").text("Age: 6");
+
+  }
+}
+
 
 
 ////////////////DOCUMENT READY
@@ -757,6 +731,7 @@ $(function(){
     } else if(e.keyCode === 87) {
       wPressed = true;
     }
+
   }
 
   function keyUpHandler(e) {
@@ -853,9 +828,17 @@ $(function(){
             bulletArray[i].timesBounced++;
           }
         }
-      }
-      if (bulletArray[i].timesBounced > 50) {
-        bulletArray.splice(i, 1);
+        if (bulletArray[i].timesBounced > 2) {
+          bulletArray.splice(i, 1);
+        }
+      } else {
+        for (var k = 0; k < wallArray.length; k++) {
+          if(collisionDetection(bulletArray[i],wallArray[k]).match(/.+/i)) {
+            bulletArray.splice(i, 1);
+            i--;
+            k = wallArray.length;
+          }
+        }
       }
     }
   }
@@ -904,6 +887,7 @@ $(function(){
       $("#time").css("color", "tomato");
     }
     time--;
+    checkTime(player1);
 
   }
   setInterval(draw, 10);
