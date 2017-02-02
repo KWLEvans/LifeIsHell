@@ -4,7 +4,7 @@ var ballArray = [];
 var bulletArray = [];
 var playerArray = [];
 var itemArray = [];
-var availablePickUpsArray = ["health", "bigShot", "splitShot", "ricochet"];
+var availablePickUpsArray = ["health", "bigShot", "splitShot", "ricochet", "speedBoost"];
 var points = 0;
 var roomNumber = 0;
 var leftPressed = false;
@@ -250,6 +250,8 @@ Player.prototype.pickUp = function(pickUp) {
     if (!this.upgrades.includes("ricochet")) {
       this.upgrades.push("ricochet");
     }
+  } else if (pickUp.type === "speedBoost") {
+    this.moveSpeed = this.moveSpeed * 2;
   }
 }
 
@@ -426,7 +428,7 @@ function Item(xPos, yPos, type) {
 
 Item.prototype.draw = function(canvasContext) {
   var color;
-  if (this.type === "health") {
+  if (this.type === "health" || this.type === "speedBoost") {
     itemImg = medicineImg;
   } else if (this.type === "bigShot" || this.type === "splitShot" || this.type === "ricochet") {
     itemImg = bigShotImg;
@@ -463,19 +465,19 @@ function createDoor() {
 }
 
 function createOutDoor(player) {
-  if (player.xPos + player.width + player.dx > 595) {
+  if (player.xPos + player.width + player.moveSpeed > 595) {
     player.xPos = 6;
     OutDoor.xPos = -44;
     OutDoor.yPos = player.yPos;
-  } else if (player.xPos + player.dx < 7) {
+  } else if (player.xPos + player.moveSpeed < 7) {
     player.xPos = 600 - player.moveSpeed - player.width;
     OutDoor.xPos = 594;
     OutDoor.yPos = player.yPos;
-  } else if (player.yPos + player.height + player.dy > 595) {
+  } else if (player.yPos + player.height + player.moveSpeed > 595) {
     player.yPos = 6;
     OutDoor.yPos = -44;
     OutDoor.xPos = player.xPos;
-  } else if (player.yPos + player.dy < 7) {
+  } else if (player.yPos + player.moveSpeed < 7) {
     player.yPos = 600 - player.moveSpeed - player.height;
     OutDoor.yPos = 594;
     OutDoor.xPos = player.xPos;
