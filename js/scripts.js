@@ -913,7 +913,10 @@ $(function(){
       sessionStorage.setItem("topScoreHistory", topScores);
       topScores = topScores.split(',')
       topScores.sort(sortNumber);
-      for (var i = topScores.length-1; i>topScores.length-10; i--) {
+      if (topScores.length > 10) {
+        topScores = topScores.splice(9,topScores.length-10);
+      }
+      for (var i = topScores.length-1; i>0; i--) {
         $('.scores').append('<li>'+topScores[i]+'</li>');
       }
       clearInterval(drawInterval);
