@@ -18,6 +18,8 @@ var wPressed = false;
 var gameReset = true;
 var difficulties = "easy";
 var time;
+var topScores;
+var drawInterval;
 
 var bgImg = new Image();
 bgImg.src = "img/carpet.jpg";
@@ -110,18 +112,11 @@ var Room = {
     $('#age').text("Age: 0")
     bulletArray = [];
     wallArray = [];
-    createWalls((roomNumber*2)+2);
+    createWalls(roomNumber+2);
     createBall(roomNumber/2);
     createOutDoor(player);
     createDoor();
     createItem();
-    if (roomNumber > 10) {
-      gameReset = false;
-      $('.game').hide();
-      $('#hardware').hide();
-      $('#score').text(points);
-      $('.gameOver').fadeIn();
-    }
   }
 }
 
@@ -498,9 +493,9 @@ function createWalls(numberOfWalls) {
   for (var i = 1; i<=numberOfWalls; i++) {
     // var randomWidth = randomNumberGrid(4,4);
     // var randomHeight = randomNumberGrid(4,4);
-    var randomXPosition = randomNumber(1,13)*40;
-    var randomYPosition = randomNumber(1,13)*40;
-    var newWall = new Wall(randomXPosition, randomYPosition, 40, 40);
+    var randomXPosition = randomNumber(1,6)*80;
+    var randomYPosition = randomNumber(1,6)*80;
+    var newWall = new Wall(randomXPosition, randomYPosition, 80, 80);
     if (creationCollision(newWall)) {
       i--;
     } else if (creationCollision(playerArray[0])) {
@@ -621,7 +616,6 @@ function creationCollision(createdObject) {
 }
 
 function checkTime(player1) {
-  console.log('made it')
   if (time < 3000) {
     playerImg.src = "img/grandpa.png";
     ballImg.src = "img/grave.png";
@@ -670,7 +664,7 @@ $(function(){
       $('.introduction').hide();
       $('#hardware').show();
       $('.game').fadeIn();
-      time = 10000;
+      time = 1000;
     }
     if (e.keyCode === 114) {
         //Reload
@@ -679,6 +673,8 @@ $(function(){
     }
   });
 
+  var topScoreHistory = sessionStorage.getItem('topScoreHistory')
+  var topScores = topScores + topScoreHistory
 
   var canvas = document.getElementById("canvas");
   var ctx = canvas.getContext("2d");
@@ -837,6 +833,11 @@ $(function(){
     }
   }
 
+  function sortNumber(a,b) {
+    return a - b;
+}
+
+
 ///////////////// Call all programs
 
 
@@ -863,7 +864,15 @@ $(function(){
       $('#hardware').hide();
       $('#score').text(points);
       $('.gameOver').fadeIn();
-
+      pointsString = points.toString();
+      topScores = topScores + ',' + pointsString;
+      sessionStorage.setItem("topScoreHistory", topScores);
+      topScores = topScores.split(',')
+      topScores.sort(sortNumber);
+      for (var i = topScores.length-1; i>topScores.length-10; i--) {
+        $('.scores').append('<li>'+topScores[i]+'</li>');
+      }
+      clearInterval(drawInterval);
     }
 
     displayHealth(player1.currentHealth, player1.totalHealth);
@@ -884,5 +893,6 @@ $(function(){
     checkTime(player1);
 
   }
-  setInterval(draw, 10);
+  drawInterval = setInterval(draw, 10);
+
 });

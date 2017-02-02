@@ -1,3 +1,4 @@
+* { padding: 0; margin: 0; }
 body {
   background-image: url("../img/general/background.png");
 }
@@ -116,18 +117,9 @@ h2 {
 
 .gameOver {
   display: none;
-  height: 100vh;
+  height: 160vh;
   width: 100vw;
   background-image: url('../img/welcometohell.jpg');
-  background-size: 100vw 100vh;
-}
-
-#scorelayout {
-  position: absolute;
-  top: 3%;
-  left: 31%;
-
-
 }
 
 .gameOver h1 {
@@ -145,36 +137,39 @@ h2 {
   text-decoration: underline;
 }
 
-.gameOver h2 .yourscore {
-  margin-top: 73vh;
+.gameOver .yourscore {
   text-align: center;
   font-size: 5vh;
+  position: relative;
+  left: 35vw;
 }
 
-.gameOver h2 .topscores {
+#topscores {
   position: absolute;
-  margin-top: 78vh
   text-align: center;
   font-size: 5vh;
+  top: 70vh;
 }
 
-.gameOver ul .scores{
+.gameOver .scores{
   text-align: center;
   list-style: none;
   font-size: 5vh;
-  position: absolute;
   color: white;
+  position: absolute;
+  top: 80vh;
 }
 
-.gameOver li .scores{
+.gameOver .scores li{
   text-align: center;
   list-style: none;
   font-size: 5vh;
-  position: absolute;
   color: white;
+  position: relative;
+  margin-left: 47vw;
 }
 
-* { padding: 0; margin: 0; }
+
 
 canvas {
   display: block;
