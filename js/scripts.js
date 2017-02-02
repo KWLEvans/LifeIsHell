@@ -463,21 +463,21 @@ function createDoor() {
 }
 
 function createOutDoor(player) {
-  if (player.xPos + player.width > 595) {
+  if (player.xPos + player.width + player.dx > 595) {
     player.xPos = 6;
-    OutDoor.xPos = -45;
+    OutDoor.xPos = -44;
     OutDoor.yPos = player.yPos;
-  } else if (player.xPos < 7) {
+  } else if (player.xPos + player.dx < 7) {
     player.xPos = 600 - player.moveSpeed - player.width;
-    OutDoor.xPos = 595;
+    OutDoor.xPos = 594;
     OutDoor.yPos = player.yPos;
-  } else if (player.yPos + player.height > 595) {
+  } else if (player.yPos + player.height + player.dy > 595) {
     player.yPos = 6;
-    OutDoor.yPos = -45;
+    OutDoor.yPos = -44;
     OutDoor.xPos = player.xPos;
-  } else if (player.yPos < 7) {
+  } else if (player.yPos + player.dy < 7) {
     player.yPos = 600 - player.moveSpeed - player.height;
-    OutDoor.yPos = 595;
+    OutDoor.yPos = 594;
     OutDoor.xPos = player.xPos;
   }
 }
@@ -638,7 +638,7 @@ function collisionDetection(collider, object) {
 
 
 function doorCollision(player) {
-  if ((player.xPos + player.width > Door.xPos && player.xPos < Door.xPos + Door.width) && (player.yPos + player.height > Door.yPos && player.yPos < Door.yPos + Door.height)) {
+  if ((player.xPos + player.width + player.dx > Door.xPos && player.xPos + player.dx < Door.xPos + Door.width) && (player.yPos + player.height + player.dy > Door.yPos && player.yPos + player.dy < Door.yPos + Door.height)) {
     Room.generate(player);
   }
 }
