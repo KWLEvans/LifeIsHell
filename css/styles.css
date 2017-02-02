@@ -66,8 +66,11 @@ h2 {
   letter-spacing: 0.6vw;
 }
 .introduction h1 {
+  font-family: 'Caveat Brush', cursive;
   position: absolute;
   text-align: center;
+  top: 10vh;
+  left: 10vw;
   margin-top: 5vh;
   font-size: 30vh;
   color: rgba(255, 255, 255, 1);
@@ -123,6 +126,7 @@ h2 {
 }
 
 .gameOver h1 {
+  font-family: 'Black Ops One', cursive;
   position: absolute;
   text-align: center;
   margin-top: 5vh;
@@ -250,6 +254,7 @@ canvas {
   }
 
   .introduction h1 {
+    font-family: 'Caveat Brush', cursive;
     position: absolute;
     text-align: center;
     margin-top: 20vh;
@@ -310,6 +315,7 @@ canvas {
   }
 
   .gameOver h1 {
+    font-family: 'Black Ops One', cursive;
     position: absolute;
     text-align: center;
     margin-top: 5vh;
