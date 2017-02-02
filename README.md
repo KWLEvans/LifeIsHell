@@ -12,7 +12,7 @@ _This game simulates all the stages of life, and the difficulties that they cont
 
 * _Clone GitHub repository_
 * _Open index.html in any browser_
-* _The page can also be found [here](https://arr0nax.github.io/gamechanger/)_
+* _The page can also be found [here](https://kwlevans.github.io/LifeIsHell/)_
 
 ## Known Bugs
 
