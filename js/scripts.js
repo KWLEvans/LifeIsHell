@@ -16,6 +16,7 @@ var sPressed = false;
 var dPressed = false;
 var wPressed = false;
 var gameReset = true;
+var difficulties = "";
 
 var bgImg = new Image();
 bgImg.src = "img/carpet.jpg";
@@ -144,7 +145,7 @@ var Room = {
   }
 }
 
-function Player() {
+function Player(difficulties) {
   this.xPos = 10,
   this.yPos = 10,
   this.width = 30,
@@ -156,6 +157,7 @@ function Player() {
   this.currentHealth = this.totalHealth,
   this.upgrades = [];
   this.bulletSizeModifier = 5;
+  this.difficulties = difficulties;
   this.bulletSplits = 1;
 }
 
@@ -669,6 +671,20 @@ $(function(){
     ctx.fillRect(0, 0, 600, 600);
   }
 
+  //GET Difficulties
+  $("#easy").click(function(){
+    difficulties = "easy";
+    console.log("easy selected")
+  });
+  $("#normal").click(function(){
+    difficulties = "normal"
+    console.log("normal selected")
+  });
+  $("#hard").click(function(){
+    difficulties = "hard"
+    console.log("hard selected")
+  });
+
   var player1 = new Player();
   playerArray.push(player1);
 
@@ -789,6 +805,11 @@ $(function(){
   }
 
 ///////////////// Call all programs
+
+
+
+
+
   Room.generate(player1);
 
   function draw() {
@@ -803,7 +824,16 @@ $(function(){
     drawItems();
     doorCollision(player1);
     if (collisionDetectionLoop(playerArray,ballArray)) {
-      player1.currentHealth -= 2;
+      if(player1.difficulties === "easy"){
+        player1.currentHealth -= 2;
+      }else if (player1.difficulties === "normal"){
+        player1.currentHealth -= 4;
+      }else if([player1.difficulties === "hard"]){
+        player1.currentHealth -= 7;
+      }else{
+        player1.currentHealth -= 2;
+      }
+
       if (player1.currentHealth < 0) {
         gameReset = false;
         $('.game').hide();

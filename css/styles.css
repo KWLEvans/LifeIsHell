@@ -27,11 +27,10 @@ body {
 }
 
 
-
 h2 {
   display: inline;
+  font-size: 2rem;
 }
-
 
 .game {
   display: none;
@@ -73,6 +72,38 @@ h2 {
   color: rgba(255, 255, 255, 1);
 }
 
+#difficulties button {
+  font-family: fantasy;
+}
+
+#easy{
+  font-weight: bold;
+  background-color: lightgrey;
+  color: black;
+  width:100px;
+  margin-top: 80vh;
+  margin-left: 40vw;
+}
+#normal{
+  font-weight: bold;
+  background-color: lightgrey;
+  color: black;
+  width: 100px;
+  margin-top: 80vh;
+  margin-left: 5vh;
+}
+
+#hard{
+  font-weight: bold;
+  background-color: lightgrey;
+  color: black;
+  width: 100px;
+  margin-top: 80vh;
+  margin-left: 5vh;
+}
+
+
+
 .color {
   font-size: 2rem;
   color: red;
@@ -80,6 +111,8 @@ h2 {
   -webkit-text-stroke-width: 1px;
   -webkit-text-stroke-color: black;
 }
+
+
 
 .gameOver {
   display: none;
@@ -150,11 +183,10 @@ canvas {
   border-radius: 5px;
 }
 
-
 #health-container{
   position: relative;
   width: 600px;
-  height: 20px;
+  height: 22px;
   border: 2px solid darkgreen;
   border-radius: 10%;
   margin: 0 auto;
@@ -176,5 +208,4 @@ canvas {
   width: 600px;
   height: 20px;
   background-color: #3FFF33;
-  border-radius: 10%;
 }
