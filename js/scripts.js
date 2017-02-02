@@ -28,16 +28,25 @@ var bigShotImg = new Image();
 bigShotImg.src = "img/bigshot.png";
 
 var playerImg = new Image();
-playerImg.src = "img/baby.jpg"
+playerImg.src = "img/baby.jpg";
 
 var ballImg = new Image();
-ballImg.src = "img/antifreeze.png"
+ballImg.src = "img/antifreeze.png";
 
 var bulletImg = new Image();
-bulletImg.src = "img/pacifier.png"
+bulletImg.src = "img/pacifier.png";
 
 var wallImg = new Image();
-wallImg.src = "img/crib.jpg"
+wallImg.src = "img/crib.jpg";
+
+var ricochetImg = new Image();
+ricochetImg.src = "img/ricochet.png";
+
+var speedBoosterImg = new Image();
+speedBoosterImg.src = "img/speedBooster.png";
+
+var splitShotImg = new Image();
+splitShotImg.src = "img/splitshot.png";
 
 
 var Door = {
@@ -428,10 +437,16 @@ function Item(xPos, yPos, type) {
 
 Item.prototype.draw = function(canvasContext) {
   var color;
-  if (this.type === "health" || this.type === "speedBoost") {
+  if (this.type === "health") {
     itemImg = medicineImg;
-  } else if (this.type === "bigShot" || this.type === "splitShot" || this.type === "ricochet") {
+  } else if (this.type === "bigShot") {
     itemImg = bigShotImg;
+  }else if (this.type === "ricochet") {
+    itemImg = ricochetImg;
+  }else if (this.type === "speedBoost") {
+    itemImg = speedBoosterImg;
+  }else if (this.type === "splitShot") {
+    itemImg = splitShotImg;
   }
   canvasContext.beginPath();
   canvasContext.rect(this.xPos, this.yPos, this.width, this.height);
@@ -543,12 +558,16 @@ function createItem() {
     var randomXPosition = randomNumberGrid(2,28);
     var randomYPosition = randomNumberGrid(2,28);
     var randomItem = availablePickUpsArray[randomNumber(0, availablePickUpsArray.length - 1)];
+    console.log("Item1 picked up")
+    console.log(randomItem);
     itemArray.push(new Item(randomXPosition, randomYPosition, randomItem));
   }
   if (spawnChance > 8) {
     var randomXPosition = randomNumberGrid(2,28);
     var randomYPosition = randomNumberGrid(2,28);
     var randomItem = availablePickUpsArray[randomNumber(0, availablePickUpsArray.length - 1)];
+    console.log("Item2 picked up")
+    console.log(randomItem);
     itemArray.push(new Item(randomXPosition, randomYPosition, randomItem));
   }
   if (spawnChance === 10) {
@@ -556,6 +575,8 @@ function createItem() {
     var randomYPosition = randomNumberGrid(2,28);
     var randomItem = availablePickUpsArray[randomNumber(0, availablePickUpsArray.length - 1)];
     itemArray.push(new Item(randomXPosition, randomYPosition, randomItem));
+    console.log("Item3 picked up")
+    console.log(randomItem);
   }
 }
 
