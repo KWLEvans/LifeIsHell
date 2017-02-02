@@ -4,7 +4,7 @@ var ballArray = [];
 var bulletArray = [];
 var playerArray = [];
 var itemArray = [];
-var availablePickUpsArray = ["health", "bigShot", "splitShot", "ricochet", "speedBoost"];
+var availablePickUpsArray = ["health", "bigShot", "splitShot", "ricochet", "speedBoost", "extraTime"];
 var points = 0;
 var roomNumber = 0;
 var leftPressed = false;
@@ -48,6 +48,9 @@ speedBoosterImg.src = "img/speedBooster.png";
 
 var splitShotImg = new Image();
 splitShotImg.src = "img/splitshot.png";
+
+var extraTimeImg = new Image();
+extraTimeImg.src = "img/stopwatch.png";
 
 
 var Door = {
@@ -115,12 +118,14 @@ var Room = {
     createOutDoor(player);
     createDoor();
     createItem();
-    if (roomNumber > 10) {
-      gameReset = false;
-      $('.game').hide();
-      $('#hardware').hide();
-      $('#score').text(points);
-      $('.gameOver').fadeIn();
+    removeSpeed(playerArray[0]);
+  }
+}
+
+function removeSpeed(player) {
+  for(var i = 0; i < player.upgrades.length; i++) {
+    if (player.upgrades[i] === "speedBoost") {
+      player.upgrades.splice(i, 1);
     }
   }
 }
@@ -234,6 +239,9 @@ Player.prototype.pickUp = function(pickUp) {
     }
   } else if (pickUp.type === "speedBoost") {
     this.moveSpeed = this.moveSpeed * 2;
+    this.upgrades.push("speedBoost");
+  } else if (pickUp.type === "extraTime") {
+    time += 1000;
   }
 }
 
@@ -301,14 +309,14 @@ function Bullet(player) {
 
 Bullet.prototype.setDirection = function() {
   if (dPressed) {
-    this.dx = 10;
+    this.dx = 7;
   } else if (aPressed) {
-    this.dx = -10;
+    this.dx = -7;
   }
   if (wPressed) {
-    this.dy = -10;
+    this.dy = -7;
   } else if (sPressed) {
-    this.dy = 10;
+    this.dy = 7;
   }
   aPressed = false;
   sPressed = false;
@@ -320,14 +328,14 @@ Bullet.prototype.setDirection = function() {
 function splitShot(bulletsArray) {
   var bulletTrajectories;
   if (dPressed) {
-    bulletTrajectories = multiShotCases(10, "x", bulletsArray);
+    bulletTrajectories = multiShotCases(7, "x", bulletsArray);
   } else if (aPressed) {
-    bulletTrajectories = multiShotCases(-10, "x", bulletsArray);
+    bulletTrajectories = multiShotCases(-7, "x", bulletsArray);
   }
   if (wPressed) {
-    bulletTrajectories = multiShotCases(-10, "y", bulletsArray);
+    bulletTrajectories = multiShotCases(-7, "y", bulletsArray);
   } else if (sPressed) {
-    bulletTrajectories = multiShotCases(10, "y", bulletsArray);
+    bulletTrajectories = multiShotCases(7, "y", bulletsArray);
   }
   aPressed = false;
   sPressed = false;
@@ -420,6 +428,8 @@ Item.prototype.draw = function(canvasContext) {
     itemImg = speedBoosterImg;
   }else if (this.type === "splitShot") {
     itemImg = splitShotImg;
+  } else if (this.type === "extraTime") {
+    itemImg = extraTimeImg;
   }
   canvasContext.beginPath();
   canvasContext.rect(this.xPos, this.yPos, this.width, this.height);
@@ -527,8 +537,21 @@ function createItem() {
   for (var i = 0; i < numberOfItems; i++) {
     var randomXPosition = randomNumberGrid(2,28);
     var randomYPosition = randomNumberGrid(2,28);
-    var randomItem = availablePickUpsArray[randomNumber(0, availablePickUpsArray.length - 1)];
-    var newItem = new Item(randomXPosition, randomYPosition, randomItem);
+    var randomItemIndex = randomNumber(1,20)
+    var itemToSpawn;
+    if (randomItemIndex === 20) {
+      itemToSpawn = "ricochet";
+    } else if (randomItemIndex > 16) {
+      itemToSpawn = "splitShot";
+    } else if (randomItemIndex > 12) {
+      itemToSpawn = "extraTime";
+    } else if (randomItemIndex > 7) {
+      itemToSpawn = "health";
+    } else {
+      itemToSpawn = "bigShot";
+    }
+    console.log(itemToSpawn);
+    var newItem = new Item(randomXPosition, randomYPosition, itemToSpawn);
     if (creationCollision(newItem)) {
       i--;
     } else {
@@ -620,15 +643,14 @@ function creationCollision(createdObject) {
   }
 }
 
-function checkTime(player1) {
-  console.log('made it')
+function checkTime(player) {
   if (time < 3000) {
     playerImg.src = "img/grandpa.png";
     ballImg.src = "img/grave.png";
     bulletImg.src = "img/candy.png";
     wallImg.src = "img/hospitalbed.png";
     bgImg.src = 'img/vinyl.jpg';
-    player1.moveSpeed = 1;
+    player.moveSpeed = 1;
     $("#age").text("Age: 81");
   } else if (time < 5000) {
     playerImg.src = "img/adult.gif";
@@ -636,16 +658,15 @@ function checkTime(player1) {
     bulletImg.src = "img/coffee.png";
     wallImg.src = "img/taxform.png";
     bgImg.src = 'img/marble.jpg';
-    player1.moveSpeed = 4;
+    player.moveSpeed = 4;
     $("#age").text("Age: 42");
-
   } else if (time < 7000) {
     playerImg.src = "img/teenager.png";
     ballImg.src = "img/puberty.jpg";
     bulletImg.src = "img/playboy.jpg";
     wallImg.src = "img/tv.png";
     bgImg.src = 'img/bathroom.jpg';
-    player1.moveSpeed = 5;
+    player.moveSpeed = 5;
     $("#age").text("Age: 17");
 
   } else if (time < 9000) {
@@ -654,9 +675,11 @@ function checkTime(player1) {
     bulletImg.src = "img/pizza.png";
     wallImg.src = "img/table.jpg";
     bgImg.src = 'img/cafeteriafloor.jpg';
-    player1.moveSpeed = 2;
+    player.moveSpeed = 2;
     $("#age").text("Age: 6");
-
+  }
+  if (player.upgrades.includes("speedBoost")) {
+    player.moveSpeed = player.moveSpeed * 2;
   }
 }
 
