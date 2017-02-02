@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <link href="css/bootstrap.css" rel="stylesheet" type="text/css">
-    <link href="css/styles.css" rel="stylesheet" type="text/css">
-    <script type="text/javascript" src="js/jquery-3.1.1.js"></script>
-    <script type="text/javascript" src="js/scripts.js"></script>
+<!-- saved from url=(0050)file:///Users/Guest/Desktop/gamechanger/index.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <link href="./index_files/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="./index_files/styles.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="./index_files/jquery-3.1.1.js"></script>
+    <script type="text/javascript" src="./index_files/scripts.js"></script>
     <title></title>
   </head>
   <body>
 
 
     <!-- 1. GAME START: INITIALLY SHOWN -->
-    <div class="introduction">
-      <div id='openinglayout'>
+    <div class="introduction" style="display: none;">
+      <div id="openinglayout">
         <h2><span class="color">Arrows</span> to Move  </h2>
         <h2><span class="color">WASD</span> to Shoot  </h2>
         <h2><span class="color">Space</span> to Start  </h2>
@@ -31,17 +31,17 @@
 
 
     <!-- 2. GAME PLAY: INITIALLY HIDDEN -->
-    <div id="hardware">
-      <img src="img/general/hardware.png" alt="gamecnsole">
-      <div class="game">
+    <div id="hardware" style="display: block;">
+      <img src="./index_files/hardware.png" alt="gamecnsole">
+      <div class="game" style="display: block;">
         <canvas id="canvas" width="600" height="600"></canvas>
-        <h2 id="points"></h2>
-        <h2 id="age"></h2>
-        <h2 id="time"></h2>
+        <h2 id="points">Points: 99</h2>
+        <h2 id="age">Age: 17</h2>
+        <h2 id="time" style="color: tomato;">Time: 20</h2>
 
         <div id="health-container">
-          <div id="health-danger"></div>
-          <div id="health"></div>
+          <div id="health-danger" style="display: none;"></div>
+          <div id="health" style="width: 600px;"></div>
         </div>
 
         <div id="health-number"></div>
@@ -52,10 +52,11 @@
       <div class="gameOver">
         <h1>GAME OVER</h1>
         <div id="scorelayout">
-          <h2 class="yourscore">Your Score: <span id = "score"></span></h2>
+          <h2 class="yourscore">Your Score: <span id="score"></span></h2>
           <h2 class="topscores">*   Top Scores  *</h2>
           <ul class="scores"></ul>
         </div>
       </div>
-  </body>
-</html>
+  
+
+</body></html>

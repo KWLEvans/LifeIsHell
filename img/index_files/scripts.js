@@ -110,7 +110,7 @@ var Room = {
     $('#age').text("Age: 0")
     bulletArray = [];
     wallArray = [];
-    createWalls((roomNumber*2)+2);
+    createWalls(3);
     createBall(roomNumber/2);
     createOutDoor(player);
     createDoor();
@@ -498,7 +498,7 @@ function createOutDoor(player) {
     player.xPos = 6;
     OutDoor.xPos = -44;
     OutDoor.yPos = player.yPos;
-  } else if (player.xPos - player.moveSpeed < 15) {
+  } else if (player.xPos + player.moveSpeed < 15) {
     player.xPos = 600 - player.moveSpeed - player.width;
     OutDoor.xPos = 594;
     OutDoor.yPos = player.yPos;
@@ -506,7 +506,7 @@ function createOutDoor(player) {
     player.yPos = 6;
     OutDoor.yPos = -44;
     OutDoor.xPos = player.xPos;
-  } else if (player.yPos - player.moveSpeed < 15) {
+  } else if (player.yPos + player.moveSpeed < 15) {
     player.yPos = 600 - player.moveSpeed - player.height;
     OutDoor.yPos = 594;
     OutDoor.xPos = player.xPos;
@@ -558,7 +558,7 @@ function createBullet(player) {
     for (var i = 0; i < newBulletsArray.length; i++) {
       bulletArray.push(newBulletsArray[i]);
     }
-    if (bulletArray.length>10) {
+    if (bulletArray.length>30) {
       bulletArray.splice(0, player.bulletSplits);
     }
   }
@@ -566,16 +566,12 @@ function createBullet(player) {
 
 function createWalls(numberOfWalls) {
   for (var i = 1; i<=numberOfWalls; i++) {
-    // var randomWidth = randomNumberGrid(4,4);
-    // var randomHeight = randomNumberGrid(4,4);
-    var randomXPosition = randomNumber(1,13)*40;
-    var randomYPosition = randomNumber(1,13)*40;
-    var newWall = new Wall(randomXPosition, randomYPosition, 40, 40);
+    var randomWidth = randomNumberGrid(4,10);
+    var randomHeight = randomNumberGrid(4,10);
+    var randomXPosition = randomNumberGrid(2,28 - (randomWidth/20));
+    var randomYPosition = randomNumberGrid(2,28 - (randomHeight/20));
+    var newWall = new Wall(randomXPosition, randomYPosition, randomWidth, randomHeight);
     if (creationCollision(newWall)) {
-      i--;
-    } else if (creationCollision(playerArray[0])) {
-      i--;
-    } else if (creationCollision(Door)) {
       i--;
     } else {
       wallArray.push(newWall);
@@ -851,17 +847,9 @@ $(function(){
             bulletArray[i].timesBounced++;
           }
         }
-        if (bulletArray[i].timesBounced > 2) {
-          bulletArray.splice(i, 1);
-        }
-      } else {
-        for (var k = 0; k < wallArray.length; k++) {
-          if(collisionDetection(bulletArray[i],wallArray[k]).match(/.+/i)) {
-            bulletArray.splice(i, 1);
-            i--;
-            k = wallArray.length;
-          }
-        }
+      }
+      if (bulletArray[i].timesBounced > 50) {
+        bulletArray.splice(i, 1);
       }
     }
   }
@@ -904,9 +892,7 @@ $(function(){
 
     $("#time").text("Time: " + (time/100).toFixed(0));
 
-    if(time < 500){
-      $("#time").css("color", "darkred");
-    }else if(time < 3000){
+    if(time < 3000){
       $("#time").css("color", "tomato");
     }
     time--;
