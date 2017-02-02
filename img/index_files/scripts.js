@@ -892,9 +892,7 @@ $(function(){
 
     $("#time").text("Time: " + (time/100).toFixed(0));
 
-    if(time < 500){
-      $("#time").css("color", "darkred");
-    }else if(time < 3000){
+    if(time < 3000){
       $("#time").css("color", "tomato");
     }
     time--;
