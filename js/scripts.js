@@ -515,22 +515,19 @@ function createOutDoor(player) {
 
 function createBall(numberOfBalls) {
   for (var i = 1; i<=numberOfBalls; i++) {
-    var remade = false;
     var dx = randomPositiveOrNegative(2);
     var dy = randomPositiveOrNegative(2);
     var randomBallX = randomNumberGrid(0, 29);
     var randomBallY = randomNumberGrid(0, 29);
-    var newBall = new Ball(randomBallX, randomBallY, 20, 20, dx, dy);
+    var newBall = new Ball(randomBallX, randomBallY, 40, 40, dx, dy);
 
     if (creationCollision(newBall)) {
       i--;
     } else {
       if (randomNumber(1,5) === 5) {
         newBall.chaser = true;
-      }
-      if (randomNumber(1,10) === 10) {
-        newBall.height = 40;
-        newBall.width = 40;
+        newBall.height = 20;
+        newBall.width = 20;
       }
       ballArray.push(newBall);
     }
@@ -617,6 +614,16 @@ function displayHealth(currentHealth, health){
   }
 }
 
+function playerDamage(player) {
+  if(player.difficulties === "easy"){
+    player.currentHealth -= 2;
+  }else if (player.difficulties === "normal"){
+    player.currentHealth -= 4;
+  }else if([player.difficulties === "hard"]){
+    player.currentHealth -= 7;
+  }
+}
+
 //Collision
 
 
@@ -674,9 +681,7 @@ function doorCollision(player) {
 
 function creationCollision(createdObject) {
   for (var j = 0; j < wallArray.length; j++) {
-    if (collisionDetection(createdObject, wallArray[j]).match(/^[^canvas]+/i)) {
-      return true;
-    }
+    return collisionDetection(createdObject, wallArray[j]).match(/^[^canvas]+/i);
   }
 }
 
@@ -791,11 +796,11 @@ $(function(){
 
   function moveBalls(){
     for(var i=0; i<ballArray.length; i++){
+      ballArray[i].xPos += ballArray[i].dx;
+      ballArray[i].yPos += ballArray[i].dy;
       if (ballArray[i].chaser) {
         ballArray[i].chasePlayer(player1);
       }
-      ballArray[i].xPos += ballArray[i].dx;
-      ballArray[i].yPos += ballArray[i].dy;
       for (var j=0; j<wallArray.length; j++){
         if(collisionDetection(ballArray[i],wallArray[j]).match(/x+/i)) {
           ballArray[i].dx = -ballArray[i].dx;
@@ -804,6 +809,15 @@ $(function(){
         if(collisionDetection(ballArray[i],wallArray[j]).match(/y+/i)){
           ballArray[i].dy = -ballArray[i].dy;
         }
+      }
+      if(collisionDetection(ballArray[i],player1).match(/^x+/i)) {
+        ballArray[i].dx = -ballArray[i].dx;
+        playerDamage(player1);
+      }
+
+      if(collisionDetection(ballArray[i],player1).match(/^x*y+/i)){
+        ballArray[i].dy = -ballArray[i].dy;
+        playerDamage(player1);
       }
     }
   }
@@ -857,24 +871,16 @@ $(function(){
     drawWalls();
     drawItems();
     doorCollision(player1);
-    if (collisionDetectionLoop(playerArray,ballArray)) {
-      if(player1.difficulties === "easy"){
-        player1.currentHealth -= 2;
-      }else if (player1.difficulties === "normal"){
-        player1.currentHealth -= 4;
-      }else if([player1.difficulties === "hard"]){
-        player1.currentHealth -= 7;
-      }
 
-      if (player1.currentHealth < 0) {
-        gameReset = false;
-        $('.game').hide();
-        $('#hardware').hide();
-        $('#score').text(points);
-        $('.gameOver').fadeIn();
+    if (player1.currentHealth < 0) {
+      gameReset = false;
+      $('.game').hide();
+      $('#hardware').hide();
+      $('#score').text(points);
+      $('.gameOver').fadeIn();
 
-      }
     }
+
     displayHealth(player1.currentHealth, player1.totalHealth);
     createBullet(player1);
     moveBullets();
