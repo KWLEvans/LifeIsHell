@@ -16,7 +16,7 @@ var sPressed = false;
 var dPressed = false;
 var wPressed = false;
 var gameReset = true;
-var difficulties = "";
+var difficulties = "easy";
 
 var bgImg = new Image();
 bgImg.src = "img/carpet.jpg";
@@ -54,6 +54,8 @@ var Door = {
   yPos:300,
   height:50,
   width:50,
+  dx: 0,
+  dy: 0,
   draw: function(canvasContext) {
     canvasContext.beginPath();
     canvasContext.rect(this.xPos, this.yPos, this.width, this.height);
@@ -68,6 +70,8 @@ var OutDoor = {
   yPos: 30,
   height: 50,
   width: 50,
+  dx: 0,
+  dy: 0,
   draw: function(canvasContext) {
     canvasContext.beginPath();
     canvasContext.rect(this.xPos, this.yPos, this.height, this.width);
@@ -97,7 +101,9 @@ function randomPositiveOrNegative(number) {
 ///////////////FUNCTIONS
 var Room = {
   generate: function(player) {
-    points += 1;
+    if (roomNumber > 0) {
+      points += (2 * roomNumber);
+    }
     roomNumber += 1;
     $('#points').text("Points: " + points);
     $('#age').text("Age: 0")
@@ -105,44 +111,44 @@ var Room = {
     wallArray = [];
     createBall(roomNumber/2);
     createWalls(3);
-    createDoor();
     createOutDoor(player);
+    createDoor();
     createItem();
     if (roomNumber > 2) {
-      playerImg.src = "img/child.gif"
-      ballImg.src = "img/bully.png"
-      bulletImg.src = "img/pizza.png"
-      wallImg.src = "img/table.jpg"
-      bgImg.src = 'img/cafeteriafloor.jpg'
-      player.moveSpeed = 2
-      $("#age").text("Age: 6")
+      playerImg.src = "img/child.gif";
+      ballImg.src = "img/bully.png";
+      bulletImg.src = "img/pizza.png";
+      wallImg.src = "img/table.jpg";
+      bgImg.src = 'img/cafeteriafloor.jpg';
+      player.moveSpeed = 2;
+      $("#age").text("Age: 6");
     }
     if (roomNumber > 4) {
-      playerImg.src = "img/teenager.png"
-      ballImg.src = "img/puberty.jpg"
-      bulletImg.src = "img/playboy.jpg"
-      wallImg.src = "img/tv.png"
-      bgImg.src = 'img/bathroom.jpg'
-      player.moveSpeed = 5
-      $("#age").text("Age: 17")
+      playerImg.src = "img/teenager.png";
+      ballImg.src = "img/puberty.jpg";
+      bulletImg.src = "img/playboy.jpg";
+      wallImg.src = "img/tv.png";
+      bgImg.src = 'img/bathroom.jpg';
+      player.moveSpeed = 5;
+      $("#age").text("Age: 17");
     }
     if (roomNumber > 6) {
-      playerImg.src = "img/adult.gif"
-      ballImg.src = "img/bill.png"
-      bulletImg.src = "img/coffee.png"
-      wallImg.src = "img/taxform.png"
-      bgImg.src = 'img/marble.jpg'
-      player.moveSpeed = 4
-      $("#age").text("Age: 42")
+      playerImg.src = "img/adult.gif";
+      ballImg.src = "img/bill.png";
+      bulletImg.src = "img/coffee.png";
+      wallImg.src = "img/taxform.png";
+      bgImg.src = 'img/marble.jpg';
+      player.moveSpeed = 4;
+      $("#age").text("Age: 42");
     }
     if (roomNumber > 8) {
-      playerImg.src = "img/grandpa.png"
-      ballImg.src = "img/grave.png"
-      bulletImg.src = "img/candy.png"
-      wallImg.src = "img/hospitalbed.png"
-      bgImg.src = 'img/vinyl.jpg'
-      player.moveSpeed = 1
-      $("#age").text("Age: 81")
+      playerImg.src = "img/grandpa.png";
+      ballImg.src = "img/grave.png";
+      bulletImg.src = "img/candy.png";
+      wallImg.src = "img/hospitalbed.png";
+      bgImg.src = 'img/vinyl.jpg';
+      player.moveSpeed = 1;
+      $("#age").text("Age: 81");
     }
     if (roomNumber > 10) {
       gameReset = false;
@@ -459,22 +465,27 @@ Item.prototype.draw = function(canvasContext) {
 function createDoor() {
   var randomXOrY = randomNumber(0,2);
   var randomMinOrMax = randomNumber(0,2);
-
+  Door.dx = 0;
+  Door.dy = 0;
   if (randomXOrY) {
     if (randomMinOrMax) {
-      Door.xPos = -45;
-      Door.yPos = randomNumberGrid(1, 29);
+      Door.xPos = -44;
+      Door.yPos = randomNumberGrid(1, 27);
+      Door.dx = 5;
     } else {
-      Door.xPos = 595;
-      Door.yPos = randomNumberGrid(1, 29);
+      Door.xPos = 594;
+      Door.yPos = randomNumberGrid(1, 27);
+      Door.dx = -5;
     }
   } else {
     if (randomMinOrMax) {
-      Door.yPos = -45;
-      Door.xPos = randomNumberGrid(1, 29);
+      Door.yPos = -44;
+      Door.xPos = randomNumberGrid(1, 27);
+      Door.dy = 5;
     } else {
-      Door.yPos = 595;
-      Door.xPos = randomNumberGrid(1, 29);
+      Door.yPos = 594;
+      Door.xPos = randomNumberGrid(1, 27);
+      Door.dy = -5;
     }
   }
 }
@@ -653,6 +664,8 @@ function collisionDetection(collider, object) {
         collisionType = "x";
       } else if (Math.min(topCollision, bottomCollision) < 10) {
         collisionType = "y";
+      } else {
+        collisionType = "inside";
       }
     }
     return collisionType;
@@ -661,7 +674,7 @@ function collisionDetection(collider, object) {
 
 
 function doorCollision(player) {
-  if ((player.xPos + player.width + player.dx > Door.xPos && player.xPos + player.dx < Door.xPos + Door.width) && (player.yPos + player.height + player.dy > Door.yPos && player.yPos + player.dy < Door.yPos + Door.height)) {
+  if ((player.xPos + player.width > Door.xPos + Door.dx && player.xPos < Door.xPos + Door.width + Door.dx) && (player.yPos + player.height > Door.yPos + Door.dy && player.yPos < Door.yPos + Door.height + Door.dy)) {
     Room.generate(player);
   }
 }
@@ -805,6 +818,8 @@ $(function(){
       for(var j=0; j<ballArray.length; j++) {
         if(collisionDetection(bulletArray[i],ballArray[j]).match(/^[^canvas]+/i)) {
           console.log(collisionDetection(bulletArray[i],ballArray[j]));
+          points += 5;
+          $('#points').text("Points: " + points);
           ballArray.splice(j, 1);
         };
       }
@@ -853,8 +868,6 @@ $(function(){
         player1.currentHealth -= 4;
       }else if([player1.difficulties === "hard"]){
         player1.currentHealth -= 7;
-      }else{
-        player1.currentHealth -= 2;
       }
 
       if (player1.currentHealth < 0) {
