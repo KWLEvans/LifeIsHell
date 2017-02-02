@@ -18,6 +18,8 @@ var wPressed = false;
 var gameReset = true;
 var difficulties = "easy";
 var time;
+var shootSound = new Audio("sound/shoot.wav");
+var enemyKilledSound = new Audio("sound/enemykilled.wav");
 
 var bgImg = new Image();
 bgImg.src = "img/carpet.jpg";
@@ -561,7 +563,10 @@ function createBullet(player) {
     if (bulletArray.length>30) {
       bulletArray.splice(0, player.bulletSplits);
     }
+    shootSound.play();
   }
+
+
 }
 
 function createWalls(numberOfWalls) {
@@ -832,6 +837,7 @@ $(function(){
         if(collisionDetection(bulletArray[i],ballArray[j]).match(/^[^canvas]+/i)) {
           points += 5;
           $('#points').text("Points: " + points);
+          enemykilledSound.play();
           ballArray.splice(j, 1);
         };
       }
