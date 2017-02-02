@@ -150,10 +150,12 @@ function Player() {
   this.width = 30,
   this.height = 30,
   this.moveSpeed = 1,
+  this.dx = this.moveSpeed;
+  this.dy = this.moveSpeed;
   this.totalHealth = 600,
   this.currentHealth = this.totalHealth,
   this.upgrades = [];
-  this.bulletSizeModifier = 15;
+  this.bulletSizeModifier = 5;
   this.bulletSplits = 1;
 }
 
@@ -216,7 +218,7 @@ Player.prototype.move = function() {
   }
   //Item pick-up check
   for (var i = 0; i < itemArray.length; i++) {
-    if (collisionDetection(itemArray[i], this).match(/[xy]+[^canvas]+/gi)) {
+    if (collisionDetection(itemArray[i], this).match(/^[^canvas]+/gi)) {
       var pickUp = itemArray.splice(i, 1);
       this.pickUp(pickUp[0]);
     }
@@ -224,8 +226,6 @@ Player.prototype.move = function() {
 }
 
 Player.prototype.pickUp = function(pickUp) {
-  console.log("pick up method");
-  console.log(pickUp);
   if (pickUp.type === "health") {
     if (this.totalHealth - this.currentHealth < 100) {
       this.currentHealth = this.totalHealth;
@@ -303,13 +303,13 @@ Ball.prototype.chasePlayer = function(player) {
 }
 
 function Bullet(player) {
-  this.xPos = player.xPos + 15,
-  this.yPos = player.yPos + 15,
+  this.xPos = player.xPos + (player.width/2),
+  this.yPos = player.yPos + (player.width/2),
   this.width = 5,
   this.height = 5,
   this.dx = 0,
   this.dy = 0,
-  this.ricochet = true,
+  this.ricochet = false,
   this.timesBounced = 0
 }
 
@@ -462,19 +462,19 @@ function createDoor() {
 
 function createOutDoor(player) {
   if (player.xPos + player.width > 595) {
-    player.xPos = 0;
+    player.xPos = 6;
     OutDoor.xPos = -45;
     OutDoor.yPos = player.yPos;
-  } else if (player.xPos < 5) {
-    player.xPos = 570;
+  } else if (player.xPos < 7) {
+    player.xPos = 600 - player.moveSpeed - player.width;
     OutDoor.xPos = 595;
     OutDoor.yPos = player.yPos;
   } else if (player.yPos + player.height > 595) {
-    player.yPos = 0;
+    player.yPos = 6;
     OutDoor.yPos = -45;
     OutDoor.xPos = player.xPos;
-  } else if (player.yPos < 5) {
-    player.yPos = 570;
+  } else if (player.yPos < 7) {
+    player.yPos = 600 - player.moveSpeed - player.height;
     OutDoor.yPos = 595;
     OutDoor.xPos = player.xPos;
   }
@@ -534,20 +534,24 @@ function createWalls(numberOfWalls) {
 };
 
 function createItem() {
-  var spawnChance = 1
-  if (spawnChance > 6) {
-    var randomXPosition = randomNumberGrid(1,29);
-    var randomYPosition = randomNumberGrid(1,29);
+  var spawnChance = randomNumber(1,10);
+  if (spawnChance > 3) {
+    var randomXPosition = randomNumberGrid(2,28);
+    var randomYPosition = randomNumberGrid(2,28);
     var randomItem = availablePickUpsArray[randomNumber(0, availablePickUpsArray.length - 1)];
     itemArray.push(new Item(randomXPosition, randomYPosition, randomItem));
-    console.log(itemArray);
+  }
+  if (spawnChance > 8) {
+    var randomXPosition = randomNumberGrid(2,28);
+    var randomYPosition = randomNumberGrid(2,28);
+    var randomItem = availablePickUpsArray[randomNumber(0, availablePickUpsArray.length - 1)];
+    itemArray.push(new Item(randomXPosition, randomYPosition, randomItem));
   }
   if (spawnChance === 10) {
-    var randomXPosition = randomNumberGrid(1,29);
-    var randomYPosition = randomNumberGrid(1,29);
+    var randomXPosition = randomNumberGrid(2,28);
+    var randomYPosition = randomNumberGrid(2,28);
     var randomItem = availablePickUpsArray[randomNumber(0, availablePickUpsArray.length - 1)];
     itemArray.push(new Item(randomXPosition, randomYPosition, randomItem));
-    console.log(itemArray);
   }
 }
 
@@ -569,7 +573,6 @@ function collisionDetectionLoop(object1Array,object2Array) {
   for (var i=0;i<object1Array.length;i++) {
     for (var j=0;j<object2Array.length;j++) {
       if (collisionDetection(object1Array[i],object2Array[j])) {
-        console.log(collisionDetection(object1Array[i],object2Array[j]));
         return collisionDetection(object1Array[i],object2Array[j]);
       }
     }
@@ -577,70 +580,59 @@ function collisionDetectionLoop(object1Array,object2Array) {
 }
 
 
-function collisionDetection(collider, object) {
-  var collisionType = "";
-  if ((collider.xPos < 0 || collider.xPos + collider.width > 600) || (collider.xPos + collider.width > object.xPos && collider.xPos < object.xPos + object.width)) {
-    if (collider.yPos + collider.height > object.yPos + 5 && collider.yPos < object.yPos + object.height - 5) {
-      collisionType += 'x';
-    } else if (collider.xPos < 0 || collider.xPos + collider.width > 600) {
-      collisionType += 'canvasx';
-    }
-  }
-
-  if ((collider.yPos < 0 || collider.yPos + collider.height > 600) || (collider.yPos + collider.height > object.yPos && collider.yPos < object.yPos + object.height)) {
-    if (collider.xPos + collider.width > object.xPos + 5 && collider.xPos < object.xPos + object.width - 5) {
-      collisionType += 'y';
-    } else if (collider.yPos < 0 || collider.yPos + collider.height > 600) {
-      collisionType += 'canvasy';
-    }
-  }
-  return collisionType;
-}
-
 // function collisionDetection(collider, object) {
 //   var collisionType = "";
-//     if (collider.xPos + collider.width + collider.dx >= 600 || collider.xPos + collider.dx <= 0) {
-//       collisionType += "canvasx";
-//       console.log("should be canvasx");
-//     } else if (collider.yPos + collider.height + collider.dy >= 600 || collider.yPos + collider.dy <= 0) {
-//       collisionType += "canvasy";
-//       console.log("should be canvasy");
-//     } else {
-//       //Gives a boolean for within x or y bounds on next frame
-//       var inXBounds = (collider.xPos + collider.width + collider.dx >= object.xPos + object.dx) && (collider.xPos + collider.dx <= object.xPos + object.width + object.dx);
-//       console.log(inXBounds);
-//       var inYBounds = (collider.yPos + collider.height + collider.dy >= object.yPos + object.dy) && (collider.yPos + collider.dy <= object.yPos + object.height + object.dy);
-//       console.log(inYBounds);
-//
-//       //a number between 0 and 9 shows collision on next frame
-//       var xLeftCollision = (collider.xPos + collider.width + collider.dx) - (object.xPos + object.dx);
-//       var xRightCollision = (object.xPos + object.width + object.dx) - (collider.xPos + collider.dx);
-//       var yTopCollision = (collider.yPos + collider.height + collider.dy) - (object.yPos + object.dy);
-//       var yBottomCollision = (object.yPos + object.height + object.dy) - (collider.yPos + collider.dy);
-//
-//       function collisionValueDeterminer(firstCollision, secondCollision) {
-//         if (firstCollision >= 0 && firstCollision <= 9) {
-//           return firstCollision;
-//         } else {
-//           return secondCollision;
-//         }
-//       }
-//
-//       var xCollisionValue = collisionValueDeterminer(xLeftCollision, xRightCollision);
-//       var yCollisionValue = collisionValueDeterminer(yTopCollision, yBottomCollision);
-//
-//       if (inXBounds && inYBounds) {
-//         if (xCollisionValue >= yCollisionValue) {
-//           collisionType += "x";
-//         }
-//         if (yCollisionValue >= xCollisionValue) {
-//           collisionType += "y";
-//         }
-//       }
+//   if ((collider.xPos <= 0 || collider.xPos + collider.width >= 600) || (collider.xPos + collider.width > object.xPos && collider.xPos < object.xPos + object.width)) {
+//     if (collider.yPos + collider.height > object.yPos + 5 && collider.yPos < object.yPos + object.height - 5) {
+//       collisionType += 'x';
+//     } else if (collider.xPos < 0 || collider.xPos + collider.width > 600) {
+//       collisionType += 'canvasx';
 //     }
-//     console.log(collisionType);
+//   }
+//
+//   if ((collider.yPos < 0 || collider.yPos + collider.height > 600) || (collider.yPos + collider.height > object.yPos && collider.yPos < object.yPos + object.height)) {
+//     if (collider.xPos + collider.width > object.xPos + 5 && collider.xPos < object.xPos + object.width - 5) {
+//       collisionType += 'y';
+//     } else if (collider.yPos < 0 || collider.yPos + collider.height > 600) {
+//       collisionType += 'canvasy';
+//     }
+//   }
 //   return collisionType;
 // }
+
+function collisionDetection(collider, object) {
+  if (collider.xPos + collider.dx <= 0 || collider.xPos + collider.width + collider.dx >= 600) {
+    return "canvasx";
+  } else if (collider.yPos + collider.dy <= 0 || collider.yPos + collider.height + collider.dy >= 600) {
+    return "canvasy";
+  } else {
+    var collisionType = "";
+    var inXBounds = (collider.xPos + collider.width + collider.dx >= object.xPos + object.dx) && (collider.xPos + collider.dx <= object.xPos + object.width + object.dx);
+    var inYBounds = (collider.yPos + collider.height + collider.dy >= object.yPos + object.dy) && (collider.yPos + collider.dy <= object.yPos + object.height + object.dy);
+
+    if (inXBounds && inYBounds) {
+      var leftCollision = (collider.xPos + collider.width + collider.dx) - (object.xPos + object.dx);
+      var rightCollision = (object.xPos + object.width + object.dx) - (collider.xPos + collider.dx);
+      var topCollision = (collider.yPos + collider.height + collider.dy) - (object.yPos + object.dy);
+      var bottomCollision = (object.yPos + object.height + object.dy) - (collider.yPos + collider.dy);
+
+      if ((Math.min(leftCollision, rightCollision) < 10) && Math.min(topCollision, bottomCollision) < 10) {
+        if (Math.min(leftCollision, rightCollision) > Math.min(topCollision, bottomCollision)) {
+          collisionType = "x";
+        } else if (Math.min(leftCollision, rightCollision) < Math.min(topCollision, bottomCollision)) {
+          collisionType = "y";
+        } else {
+          collisionType = "xy";
+        }
+      } else if (Math.min(leftCollision, rightCollision) < 10) {
+        collisionType = "x";
+      } else if (Math.min(topCollision, bottomCollision) < 10) {
+        collisionType = "y";
+      }
+    }
+    return collisionType;
+  }
+}
 
 
 function doorCollision(player) {
@@ -772,18 +764,19 @@ $(function(){
       bulletArray[i].xPos += bulletArray[i].dx;
       bulletArray[i].yPos += bulletArray[i].dy;
       for(var j=0; j<ballArray.length; j++) {
-        if(collisionDetection(bulletArray[i],ballArray[j])==='xy') {
+        if(collisionDetection(bulletArray[i],ballArray[j]).match(/^[^canvas]+/i)) {
+          console.log(collisionDetection(bulletArray[i],ballArray[j]));
           ballArray.splice(j, 1);
         };
       }
       if (bulletArray[i].ricochet === true) {
         for (var k = 0; k < wallArray.length; k++) {
-          if(collisionDetection(bulletArray[i],wallArray[k])==='x' || collisionDetection(bulletArray[i],wallArray[k])==='canvasx') {
+          if(collisionDetection(bulletArray[i],wallArray[k]).match(/x+/i)) {
             bulletArray[i].dx = -bulletArray[i].dx;
             bulletArray[i].timesBounced++;
           };
 
-          if(collisionDetection(bulletArray[i],wallArray[k])==='y' || collisionDetection(bulletArray[i],wallArray[k])==='canvasy'){
+          if(collisionDetection(bulletArray[i],wallArray[k]).match(/y+/i)){
             bulletArray[i].dy = -bulletArray[i].dy;
             bulletArray[i].timesBounced++;
           };
